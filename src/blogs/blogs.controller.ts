@@ -1,5 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
+import { AppService } from '../app.service';
+import { BlogsService } from './blogs.service';
 const blogs = [
   {
     id: '698dcb38-5e7b-431f-a4c3-01454a994000',
@@ -22,6 +24,10 @@ const blogs = [
 ];
 @Controller('blogs')
 export class BlogsController {
+  constructor(
+    private readonly appService: AppService,
+    private readonly blogsService: BlogsService,
+  ) {}
   @Post()
   createBlogs(@Body() inputModel: CreateBlogInputModelType) {
     const newBlog = {
