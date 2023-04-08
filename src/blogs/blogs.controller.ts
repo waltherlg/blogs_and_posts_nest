@@ -29,15 +29,10 @@ export class BlogsController {
     private readonly blogsService: BlogsService,
   ) {}
   @Post()
-  createBlogs(@Body() inputModel: CreateBlogInputModelType) {
-    const newBlog = {
-      id: uuid(),
-      name: inputModel.name,
-      description: inputModel.description,
-      websiteUrl: inputModel.websiteUrl,
-    };
-    blogs.push(newBlog);
-    return newBlog;
+  async createBlogs(@Body() blogInputModel: CreateBlogInputModelType) {
+    const newBlogsId = await this.blogsService.createBlog(blogInputModel);
+
+    return newBlogsId;
   }
 
   @Get()
