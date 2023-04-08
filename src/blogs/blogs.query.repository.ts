@@ -4,16 +4,10 @@ import { Blog, BlogDocument, BlogTypeOutput } from './blogs.types';
 import { Model, Types } from 'mongoose';
 
 @Injectable()
-export class BlogsRepository {
+export class BlogsQueryRepository {
   constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
-  async createBlog(blogDTO): Promise<string> {
-    const newBlog = new this.blogModel(blogDTO);
-    await newBlog.save();
-    return newBlog._id.toString();
-  }
-
-  async getBlogDBTypeById(blogId): Promise<BlogTypeOutput | null> {
+  async getBlogById(blogId): Promise<BlogTypeOutput | null> {
     if (!Types.ObjectId.isValid(blogId)) {
       return null;
     }

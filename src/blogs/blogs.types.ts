@@ -1,10 +1,9 @@
-import { ObjectId } from 'mongodb';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, ObjectId, Types } from 'mongoose';
 
 export class BlogDBType {
   constructor(
-    public _id: ObjectId,
+    public _id: Types.ObjectId,
     public name: string,
     public description: string,
     public websiteUrl: string,
@@ -26,8 +25,8 @@ export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema()
 export class Blog {
-  @Prop()
-  _id: ObjectId;
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId })
+  _id: Types.ObjectId;
   @Prop()
   name: string;
   @Prop()
@@ -38,6 +37,19 @@ export class Blog {
   createdAt: string;
   @Prop()
   isMembership: boolean;
+  prepareBlogForOutput() {
+    return {
+      id: this._id.toString(),
+      name: this.name,
+      description: this.description,
+      websiteUrl: this.websiteUrl,
+      createdAt: this.createdAt,
+      isMembership: this.isMembership,
+    };
+  }
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
+BlogSchema.methods = {
+  prepareBlogForOutput: Blog.prototype.prepareBlogForOutput,
+};

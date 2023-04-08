@@ -7,11 +7,13 @@ import { BlogsController } from './blogs/blogs.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './blogs/blogs.types';
 import { BlogsService } from './blogs/blogs.service';
+import { BlogsRepository } from './blogs/blogs.repository';
+import { BlogsQueryRepository } from './blogs/blogs.query.repository';
 const mongoUri = process.env.MONGO_URL;
 
 @Module({
   imports: [
-    MongooseModule.forRoot(mongoUri),
+    MongooseModule.forRoot(mongoUri, { dbName: 'blogsAndPosts' }),
     MongooseModule.forFeature([
       {
         name: Blog.name,
@@ -20,6 +22,6 @@ const mongoUri = process.env.MONGO_URL;
     ]),
   ],
   controllers: [AppController, BlogsController],
-  providers: [AppService, BlogsService],
+  providers: [AppService, BlogsService, BlogsRepository, BlogsQueryRepository],
 })
 export class AppModule {}
