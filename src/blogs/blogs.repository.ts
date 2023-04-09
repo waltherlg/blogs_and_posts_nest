@@ -12,6 +12,13 @@ export class BlogsRepository {
     return !!result;
   }
 
+  async deleteBlogById(blogId: string): Promise<boolean> {
+    if (!Types.ObjectId.isValid(blogId)) {
+      return false;
+    }
+    return this.blogModel.findByIdAndDelete(blogId);
+  }
+
   async createBlog(blogDTO): Promise<string> {
     const newBlog = new this.blogModel(blogDTO);
     await newBlog.save();

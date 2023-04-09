@@ -34,4 +34,8 @@ export class BlogsService {
       (blog.websiteUrl = blogUpdateInputModel.websiteUrl);
     return await this.blogsRepository.saveBlog(blog);
   }
+
+  async deleteBlogById(blogsId: string): Promise<boolean> {
+    return await this.blogsRepository.deleteBlogById(blogsId);
+  }
 }
