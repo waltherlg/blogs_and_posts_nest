@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { AppService } from '../app.service';
 import { BlogsService } from './blogs.service';
 import { BlogsRepository } from './blogs.repository';
@@ -13,18 +13,35 @@ export class BlogsController {
     private readonly blogsQueryRepository: BlogsQueryRepository,
   ) {}
   @Post()
-  async createBlogs(@Body() blogInputModel: CreateBlogInputModelType) {
-    const newBlogsId = await this.blogsService.createBlog(blogInputModel);
+  async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
+    const newBlogsId = await this.blogsService.createBlog(blogCreateInputModel);
     return await this.blogsQueryRepository.getBlogById(newBlogsId);
   }
 
   @Get(':id')
-  async getBlogById(@Param('id') blogId: string) {
-    return await this.blogsQueryRepository.getBlogById(blogId);
+  async getBlogById(@Param('id') blogsId: string) {
+    return await this.blogsQueryRepository.getBlogById(blogsId);
+  }
+
+  @Put(':id')
+  async updateBlogById(
+    @Param('id') blogsId: string,
+    @Body() blogUpdateInputModel: UpdateBlogInputModelType,
+  ) {
+    return await this.blogsService.updateBlogById(
+      blogsId,
+      blogUpdateInputModel,
+    );
   }
 }
 
 export type CreateBlogInputModelType = {
+  name: string;
+  description: string;
+  websiteUrl: string;
+};
+
+export type UpdateBlogInputModelType = {
   name: string;
   description: string;
   websiteUrl: string;

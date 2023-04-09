@@ -13,7 +13,7 @@ const mongoUri = process.env.MONGO_URL;
 
 @Module({
   imports: [
-    MongooseModule.forRoot(mongoUri, { dbName: 'blogsAndPosts' }),
+    MongooseModule.forRoot(mongoUri, { dbName: 'blogsAndPosts', debug: true }),
     MongooseModule.forFeature([
       {
         name: Blog.name,

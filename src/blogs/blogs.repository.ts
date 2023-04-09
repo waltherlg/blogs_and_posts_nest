@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument, BlogTypeOutput } from './blogs.types';
-import { Model, Types } from 'mongoose';
+import { Blog, BlogDBType, BlogDocument, BlogTypeOutput } from './blogs.types';
+import { HydratedDocument, Model, Types } from 'mongoose';
 
 @Injectable()
 export class BlogsRepository {
   constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
+
+  async saveBlog(blog: HydratedDocument<BlogDBType>) {
+    const result = await blog.save();
+    return !!result;
+  }
 
   async createBlog(blogDTO): Promise<string> {
     const newBlog = new this.blogModel(blogDTO);
@@ -13,7 +18,9 @@ export class BlogsRepository {
     return newBlog._id.toString();
   }
 
-  async getBlogDBTypeById(blogId): Promise<BlogTypeOutput | null> {
+  async getBlogDBTypeById(
+    blogId,
+  ): Promise<HydratedDocument<BlogDBType> | null> {
     if (!Types.ObjectId.isValid(blogId)) {
       return null;
     }
@@ -21,6 +28,6 @@ export class BlogsRepository {
     if (!blog) {
       return null;
     }
-    return blog.prepareBlogForOutput();
+    return blog;
   }
 }
