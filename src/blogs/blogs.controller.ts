@@ -5,12 +5,13 @@ import {
   Get,
   Param,
   Post,
-  Put,
-} from '@nestjs/common';
+  Put, Query
+} from "@nestjs/common";
 import { AppService } from '../app.service';
 import { BlogsService } from './blogs.service';
 import { BlogsRepository } from './blogs.repository';
 import { BlogsQueryRepository } from './blogs.query.repository';
+import { DEFAULT_QUERY_PARAMS, QueryParamsType } from "../models/types";
 
 @Controller('blogs')
 export class BlogsController {
@@ -44,6 +45,11 @@ export class BlogsController {
   @Delete(':id')
   async deleteBlogById(@Param('id') blogId: string) {
     return await this.blogsService.deleteBlogById(blogId);
+  }
+
+  @Get()
+  async getAllBlogs(@Query() queryParams: QueryParamsType = DEFAULT_QUERY_PARAMS){
+    const allBlogs = await this.blogsQueryRepository.getAllBlogs(queryParams)
   }
 }
 
