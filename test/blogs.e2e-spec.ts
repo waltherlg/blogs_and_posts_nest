@@ -22,8 +22,10 @@ describe('BlogsController (e2e)', () => {
     await app.init();
   });
 
-  it('01-04 /blogs POST  = 201 create new blog if all is OK', () => {
-    return request(app.getHttpServer())
+  let createdBlogId: string;
+
+  it('01-04 /blogs POST  = 201 create new blog if all is OK', async () => {
+    const createResponse = await request(app.getHttpServer())
       .post('/blogs')
       .set('Authorization', `Basic ${basicAuthRight}`)
       .send({
@@ -32,5 +34,17 @@ describe('BlogsController (e2e)', () => {
         websiteUrl: 'https://www.someweb6.com',
       })
       .expect(201);
+
+    const createdResponse = createResponse.body;
+    createdBlogId = createdResponse.id;
+
+    expect(createdResponse).toEqual({
+      id: createdBlogId,
+      name: 'createdBlog6',
+      description: 'newDescription6',
+      websiteUrl: 'https://www.someweb6.com',
+      createdAt: createdResponse.createdAt,
+      isMembership: false,
+    });
   });
 });
