@@ -5,13 +5,14 @@ import {
   Get,
   Param,
   Post,
-  Put, Query
-} from "@nestjs/common";
+  Put,
+  Query,
+} from '@nestjs/common';
 import { AppService } from '../app.service';
 import { BlogsService } from './blogs.service';
 import { BlogsRepository } from './blogs.repository';
 import { BlogsQueryRepository } from './blogs.query.repository';
-import { DEFAULT_QUERY_PARAMS, QueryParamsType } from "../models/types";
+import { DEFAULT_QUERY_PARAMS, QueryParamsType } from '../models/types';
 
 @Controller('blogs')
 export class BlogsController {
@@ -48,8 +49,10 @@ export class BlogsController {
   }
 
   @Get()
-  async getAllBlogs(@Query() queryParams: QueryParamsType = DEFAULT_QUERY_PARAMS){
-    const allBlogs = await this.blogsQueryRepository.getAllBlogs(queryParams)
+  async getAllBlogs(
+    @Query() queryParams: QueryParamsType = DEFAULT_QUERY_PARAMS,
+  ) {
+    const allBlogs = await this.blogsQueryRepository.getAllBlogs(queryParams);
   }
 }
 

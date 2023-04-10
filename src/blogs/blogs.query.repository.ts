@@ -18,5 +18,5 @@ export class BlogsQueryRepository {
     return blog.prepareBlogForOutput();
   }
 
-  async getAllBlogs(queryParams){}
+  async getAllBlogs(queryParams) {}
 }
