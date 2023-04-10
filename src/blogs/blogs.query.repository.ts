@@ -23,7 +23,6 @@ export class BlogsQueryRepository {
     const blogsCount = await this.blogModel.countDocuments({
       name: new RegExp(queryParams.searchNameTerm, 'gi'),
     });
-    console.log(queryParams.searchNameTerm);
     let blogs;
     if (queryParams.searchNameTerm !== '') {
       blogs = await this.blogModel
