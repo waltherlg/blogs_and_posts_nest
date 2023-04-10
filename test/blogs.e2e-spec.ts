@@ -29,8 +29,8 @@ describe('BlogsController (e2e)', () => {
       .post('/blogs')
       .set('Authorization', `Basic ${basicAuthRight}`)
       .send({
-        name: 'createdBlog6',
-        description: 'newDescription6',
+        name: 'createdBlog',
+        description: 'newDescription',
         websiteUrl: 'https://www.someweb6.com',
       })
       .expect(201);
@@ -40,10 +40,28 @@ describe('BlogsController (e2e)', () => {
 
     expect(createdResponse).toEqual({
       id: createdBlogId,
-      name: 'createdBlog6',
-      description: 'newDescription6',
+      name: 'createdBlog',
+      description: 'newDescription',
       websiteUrl: 'https://www.someweb6.com',
       createdAt: createdResponse.createdAt,
+      isMembership: false,
+    });
+  });
+
+  it('01-05 /blogs GET = 200 return blog by id', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .get(`/blogs/${createdBlogId}`)
+
+      .expect(200);
+    console.log('createdBlogId ', createdBlogId);
+    const createdResponse = createResponse.body;
+
+    expect(createdResponse).toEqual({
+      id: createdBlogId,
+      name: 'createdBlog',
+      description: 'newDescription',
+      websiteUrl: 'https://www.someweb6.com',
+      createdAt: expect.any(String),
       isMembership: false,
     });
   });
