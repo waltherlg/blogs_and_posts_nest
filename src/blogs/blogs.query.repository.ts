@@ -19,37 +19,51 @@ export class BlogsQueryRepository {
     return blog.prepareBlogForOutput();
   }
 
-  async getAllBlogs(queryParams) {
+  async getAllBlogs(mergedQueryParams) {
     const blogsCount = await this.blogModel.countDocuments({
-      name: new RegExp(queryParams.searchNameTerm, 'gi'),
+      name: new RegExp(mergedQueryParams.searchNameTerm, 'gi'),
     });
     let blogs;
-    if (queryParams.searchNameTerm !== '') {
+    if (mergedQueryParams.searchNameTerm !== '') {
       blogs = await this.blogModel
-        .find({ name: new RegExp(queryParams.searchNameTerm, 'gi') })
-        .skip(this.skipPage(queryParams.pageNumber, queryParams.pageSize))
-        .limit(+queryParams.pageSize)
+        .find({ name: new RegExp(mergedQueryParams.searchNameTerm, 'gi') })
+        .skip(
+          this.skipPage(
+            mergedQueryParams.pageNumber,
+            mergedQueryParams.pageSize,
+          ),
+        )
+        .limit(+mergedQueryParams.pageSize)
         .sort({
-          [queryParams.sortBy]: this.sortByDesc(queryParams.sortDirection),
+          [mergedQueryParams.sortBy]: this.sortByDesc(
+            mergedQueryParams.sortDirection,
+          ),
         });
     } else {
       blogs = await this.blogModel
         .find({})
-        .skip(this.skipPage(queryParams.pageNumber, queryParams.pageSize))
-        .limit(+queryParams.pageSize)
+        .skip(
+          this.skipPage(
+            mergedQueryParams.pageNumber,
+            mergedQueryParams.pageSize,
+          ),
+        )
+        .limit(+mergedQueryParams.pageSize)
         .sort({
-          [queryParams.sortBy]: this.sortByDesc(queryParams.sortDirection),
+          [mergedQueryParams.sortBy]: this.sortByDesc(
+            mergedQueryParams.sortDirection,
+          ),
         });
     }
     const blogsOutput = blogs.map((blog: HydratedDocument<Blog>) => {
       return blog.prepareBlogForOutput();
     });
-    const pageCount = Math.ceil(blogsCount / +queryParams.pageSize);
+    const pageCount = Math.ceil(blogsCount / +mergedQueryParams.pageSize);
 
     const outputBlogs: PaginationOutputModel<BlogTypeOutput> = {
       pagesCount: pageCount,
-      page: +queryParams.pageNumber,
-      pageSize: +queryParams.pageSize,
+      page: +mergedQueryParams.pageNumber,
+      pageSize: +mergedQueryParams.pageSize,
       totalCount: blogsCount,
       items: blogsOutput,
     };

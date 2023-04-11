@@ -52,23 +52,28 @@ export class BlogsController {
     return await this.blogsService.deleteBlogById(blogId);
   }
 
+  // @Get()
+  // async getAllBlogs(
+  //   @Query('searchNameTerm') searchNameTerm = '',
+  //   @Query('sortBy') sortBy = 'createdAt',
+  //   @Query('sortDirection') sortDirection = 'desc',
+  //   @Query('pageNumber') pageNumber = '1',
+  //   @Query('pageSize') pageSize = '10',
+  // ) {
+  //   const queryParams: RequestBlogsQueryModel = {
+  //     searchNameTerm,
+  //     sortBy,
+  //     sortDirection,
+  //     pageNumber,
+  //     pageSize,
+  //   };
+  //
+  //   return await this.blogsQueryRepository.getAllBlogs(queryParams);
+  // }
   @Get()
-  async getAllBlogs(
-    @Query('searchNameTerm') searchNameTerm = '',
-    @Query('sortBy') sortBy = 'createdAt',
-    @Query('sortDirection') sortDirection = 'desc',
-    @Query('pageNumber') pageNumber = '1',
-    @Query('pageSize') pageSize = '10',
-  ) {
-    const queryParams: RequestBlogsQueryModel = {
-      searchNameTerm,
-      sortBy,
-      sortDirection,
-      pageNumber,
-      pageSize,
-    };
-
-    return await this.blogsQueryRepository.getAllBlogs(queryParams);
+  async getAllBlogs(@Query() queryParams: RequestBlogsQueryModel) {
+    const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
+    return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
   }
 }
 
