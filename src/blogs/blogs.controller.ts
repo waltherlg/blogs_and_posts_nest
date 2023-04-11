@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -51,7 +52,13 @@ export class BlogsController {
 
   @Get(':id')
   async getBlogById(@Param('id') blogsId: string) {
-    return await this.blogsQueryRepository.getBlogById(blogsId);
+    const blog = await this.blogsQueryRepository.getBlogById(blogsId);
+    if (!blog) {
+      throw new BadRequestException([
+        { message: 'blog not found', field: 'blog' },
+      ]);
+    }
+    return blog;
   }
 
   @Put(':id')
