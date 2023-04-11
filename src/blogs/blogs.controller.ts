@@ -17,7 +17,24 @@ import {
   QueryParamsType,
   RequestBlogsQueryModel,
 } from '../models/types';
+import { Length, IsString, IsUrl } from 'class-validator';
 
+export class CreateBlogInputModelType {
+  @IsString()
+  @Length(1, 15)
+  name: string;
+  @IsString()
+  @Length(1, 500)
+  description: string;
+  @IsUrl()
+  websiteUrl: string;
+}
+
+export class UpdateBlogInputModelType {
+  name: string;
+  description: string;
+  websiteUrl: string;
+}
 @Controller('blogs')
 export class BlogsController {
   constructor(
@@ -52,39 +69,9 @@ export class BlogsController {
     return await this.blogsService.deleteBlogById(blogId);
   }
 
-  // @Get()
-  // async getAllBlogs(
-  //   @Query('searchNameTerm') searchNameTerm = '',
-  //   @Query('sortBy') sortBy = 'createdAt',
-  //   @Query('sortDirection') sortDirection = 'desc',
-  //   @Query('pageNumber') pageNumber = '1',
-  //   @Query('pageSize') pageSize = '10',
-  // ) {
-  //   const queryParams: RequestBlogsQueryModel = {
-  //     searchNameTerm,
-  //     sortBy,
-  //     sortDirection,
-  //     pageNumber,
-  //     pageSize,
-  //   };
-  //
-  //   return await this.blogsQueryRepository.getAllBlogs(queryParams);
-  // }
   @Get()
   async getAllBlogs(@Query() queryParams: RequestBlogsQueryModel) {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
     return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
   }
 }
-
-export type CreateBlogInputModelType = {
-  name: string;
-  description: string;
-  websiteUrl: string;
-};
-
-export type UpdateBlogInputModelType = {
-  name: string;
-  description: string;
-  websiteUrl: string;
-};
