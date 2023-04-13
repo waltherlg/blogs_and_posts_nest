@@ -4,6 +4,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -54,7 +56,7 @@ export class BlogsController {
   async getBlogById(@Param('id') blogsId: string) {
     const blog = await this.blogsQueryRepository.getBlogById(blogsId);
     if (!blog) {
-      throw new BadRequestException([
+      throw new NotFoundException([
         { message: 'blog not found', field: 'blog' },
       ]);
     }
@@ -62,14 +64,22 @@ export class BlogsController {
   }
 
   @Put(':id')
+  @HttpCode(204)
   async updateBlogById(
     @Param('id') blogsId: string,
     @Body() blogUpdateInputModel: UpdateBlogInputModelType,
   ) {
-    return await this.blogsService.updateBlogById(
+    const result = await this.blogsService.updateBlogById(
       blogsId,
       blogUpdateInputModel,
     );
+    if (result === true) {
+      return null;
+    } else {
+      throw new NotFoundException([
+        { message: 'blog not found', field: 'blog' },
+      ]);
+    }
   }
   @Delete(':id')
   async deleteBlogById(@Param('id') blogId: string) {

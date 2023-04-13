@@ -3,12 +3,30 @@ import { Blog, BlogDBType, BlogDocument } from './blogs.types';
 
 import { BlogsRepository } from './blogs.repository';
 import { Types } from 'mongoose';
-import { UpdateBlogInputModelType } from './blogs.controller';
+import {
+  CreateBlogInputModelType,
+  UpdateBlogInputModelType,
+} from './blogs.controller';
+import { validateOrReject } from 'class-validator';
+
+const validateOrRejectModel = async (model: any, ctor: { new (): any }) => {
+  if (model instanceof ctor === false) {
+    throw new Error('Incorrect input data');
+  }
+  try {
+    await validateOrReject(model);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 @Injectable()
 export class BlogsService {
   constructor(private readonly blogsRepository: BlogsRepository) {}
-  async createBlog(blogCreateInputModel): Promise<string> {
+  async createBlog(
+    blogCreateInputModel: CreateBlogInputModelType,
+  ): Promise<string> {
+    await validateOrRejectModel(blogCreateInputModel, CreateBlogInputModelType);
     const blogDTO = new BlogDBType(
       new Types.ObjectId(),
       blogCreateInputModel.name,
