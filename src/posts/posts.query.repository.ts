@@ -5,7 +5,7 @@ import { PaginationOutputModel } from '../models/types';
 import { PostDocument, PostTypeOutput, Post } from './posts.types';
 
 @Injectable()
-export class BlogsQueryRepository {
+export class PostsQueryRepository {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
   async getPostById(postId): Promise<PostTypeOutput | null> {

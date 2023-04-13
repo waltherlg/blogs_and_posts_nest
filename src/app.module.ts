@@ -12,6 +12,7 @@ import { BlogsQueryRepository } from './blogs/blogs.query.repository';
 import { CheckService } from './other.services/check.service';
 import { PostsRepository } from './posts/posts.repository';
 import { Post, PostSchema } from './posts/posts.types';
+import { PostsQueryRepository } from './posts/posts.query.repository';
 const mongoUri = process.env.MONGO_URL;
 
 @Module({
@@ -36,6 +37,7 @@ const mongoUri = process.env.MONGO_URL;
     BlogsRepository,
     BlogsQueryRepository,
     PostsRepository,
+    PostsQueryRepository,
   ],
 })
 export class AppModule {}
