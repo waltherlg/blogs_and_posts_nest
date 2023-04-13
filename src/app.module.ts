@@ -9,6 +9,9 @@ import { Blog, BlogSchema } from './blogs/blogs.types';
 import { BlogsService } from './blogs/blogs.service';
 import { BlogsRepository } from './blogs/blogs.repository';
 import { BlogsQueryRepository } from './blogs/blogs.query.repository';
+import { CheckService } from './other.services/check.service';
+import { PostsRepository } from './posts/posts.repository';
+import { Post, PostSchema } from './posts/posts.types';
 const mongoUri = process.env.MONGO_URL;
 
 @Module({
@@ -19,9 +22,20 @@ const mongoUri = process.env.MONGO_URL;
         name: Blog.name,
         schema: BlogSchema,
       },
+      {
+        name: Post.name,
+        schema: PostSchema,
+      },
     ]),
   ],
   controllers: [AppController, BlogsController],
-  providers: [AppService, BlogsService, BlogsRepository, BlogsQueryRepository],
+  providers: [
+    AppService,
+    BlogsService,
+    CheckService,
+    BlogsRepository,
+    BlogsQueryRepository,
+    PostsRepository,
+  ],
 })
 export class AppModule {}

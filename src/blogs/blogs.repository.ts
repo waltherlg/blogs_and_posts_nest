@@ -37,4 +37,12 @@ export class BlogsRepository {
     }
     return blog;
   }
+
+  async isBlogExist(blogId): Promise<boolean> {
+    if (!Types.ObjectId.isValid(blogId)) {
+      return false;
+    }
+    const blog = await this.blogModel.findById(blogId);
+    return !!blog;
+  }
 }

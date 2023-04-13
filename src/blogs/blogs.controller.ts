@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -21,6 +22,7 @@ import {
   RequestBlogsQueryModel,
 } from '../models/types';
 import { Length, IsString, IsUrl } from 'class-validator';
+import { CheckService } from '../other.services/check.service';
 
 export class CreateBlogInputModelType {
   @IsString()
@@ -43,6 +45,7 @@ export class BlogsController {
   constructor(
     private readonly appService: AppService,
     private readonly blogsService: BlogsService,
+    private readonly checkService: CheckService,
     private readonly blogsRepository: BlogsRepository,
     private readonly blogsQueryRepository: BlogsQueryRepository,
   ) {}
@@ -69,20 +72,19 @@ export class BlogsController {
     @Param('id') blogsId: string,
     @Body() blogUpdateInputModel: UpdateBlogInputModelType,
   ) {
-    const result = await this.blogsService.updateBlogById(
+    return await this.blogsService.updateBlogById(
       blogsId,
       blogUpdateInputModel,
     );
-    if (result === true) {
-      return null;
-    } else {
+  }
+  @Delete(':id')
+  async deleteBlogById(@Param('id') blogId: string) {
+    const isBlogExist = this.checkService.isBlogExist(blogId);
+    if (!isBlogExist) {
       throw new NotFoundException([
         { message: 'blog not found', field: 'blog' },
       ]);
     }
-  }
-  @Delete(':id')
-  async deleteBlogById(@Param('id') blogId: string) {
     return await this.blogsService.deleteBlogById(blogId);
   }
 
