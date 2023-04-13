@@ -26,7 +26,7 @@ export class BlogsService {
   async createBlog(
     blogCreateInputModel: CreateBlogInputModelType,
   ): Promise<string> {
-    await validateOrRejectModel(blogCreateInputModel, CreateBlogInputModelType);
+    //await validateOrRejectModel(blogCreateInputModel, CreateBlogInputModelType);
     const blogDTO = new BlogDBType(
       new Types.ObjectId(),
       blogCreateInputModel.name,
@@ -47,9 +47,9 @@ export class BlogsService {
     if (!blog) {
       return false;
     }
-    (blog.name = blogUpdateInputModel.name),
-      (blog.description = blogUpdateInputModel.description),
-      (blog.websiteUrl = blogUpdateInputModel.websiteUrl);
+    blog.name = blogUpdateInputModel.name;
+    blog.description = blogUpdateInputModel.description;
+    blog.websiteUrl = blogUpdateInputModel.websiteUrl;
     return await this.blogsRepository.saveBlog(blog);
   }
 

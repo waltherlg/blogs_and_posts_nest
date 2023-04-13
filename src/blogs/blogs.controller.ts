@@ -1,11 +1,9 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
-  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -18,7 +16,7 @@ import { BlogsRepository } from './blogs.repository';
 import { BlogsQueryRepository } from './blogs.query.repository';
 import {
   DEFAULT_BLOGS_QUERY_PARAMS,
-  QueryParamsType,
+  RequestQueryParamsModel,
   RequestBlogsQueryModel,
 } from '../models/types';
 import { Length, IsString, IsUrl } from 'class-validator';

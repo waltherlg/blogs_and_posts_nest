@@ -24,8 +24,29 @@ describe('BlogsController (e2e)', () => {
 
   let createdBlogId: string;
 
-  it('01-04 /blogs POST  = 201 create new blog if all is OK', async () => {
+  it('01-05 /blogs GET = 200 return blog by id', async () => {
     const createResponse = await request(app.getHttpServer())
+      .get(`/blogs`)
+      .expect(200);
+    const createdResponse = createResponse.body;
+
+    expect(createdResponse).toEqual({
+      pagesCount: 0,
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+      items: [],
+    });
+  });
+
+  it('00-00 testing/all-data DELETE = 204 removeAllData', async () => {
+    const testsResponse = await request(app.getHttpServer())
+      .delete('testing/all-data')
+      .expect(204);
+  });
+
+  it('01-04 /blogs POST  = 201 create new blog if all is OK', async () => {
+    const testsResponse = await request(app.getHttpServer())
       .post('/blogs')
       .set('Authorization', `Basic ${basicAuthRight}`)
       .send({
@@ -35,7 +56,7 @@ describe('BlogsController (e2e)', () => {
       })
       .expect(201);
 
-    const createdResponse = createResponse.body;
+    const createdResponse = testsResponse.body;
     createdBlogId = createdResponse.id;
 
     expect(createdResponse).toEqual({

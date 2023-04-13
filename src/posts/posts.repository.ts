@@ -12,17 +12,17 @@ export class PostsRepository {
     return !!result;
   }
 
+  async createPost(postDTO): Promise<string> {
+    const newPost = new this.postModel(postDTO);
+    await newPost.save();
+    return newPost._id.toString();
+  }
+
   async deletePostById(postId: string): Promise<boolean> {
     if (!Types.ObjectId.isValid(postId)) {
       return false;
     }
     return this.postModel.findByIdAndDelete(postId);
-  }
-
-  async createPost(postDTO): Promise<string> {
-    const newPost = new this.postModel(postDTO);
-    await newPost.save();
-    return newPost._id.toString();
   }
 
   async getPostDBTypeById(postId): Promise<PostDocument | null> {
