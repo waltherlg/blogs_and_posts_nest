@@ -18,7 +18,6 @@ export class PostsService {
     const blog = await this.blogRepository.getBlogDBTypeById(
       postCreateInputModel.blogId,
     );
-    console.log('blog ', blog);
     if (!blog) {
       throw new NotFoundException();
     }

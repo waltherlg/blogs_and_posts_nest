@@ -21,6 +21,7 @@ import {
 } from '../models/types';
 import { Length, IsString, IsUrl } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
+import { PostsService } from '../posts/posts.service';
 
 export class CreateBlogInputModelType {
   @IsString()
@@ -38,11 +39,24 @@ export class UpdateBlogInputModelType {
   description: string;
   websiteUrl: string;
 }
+
+export class CreatePostByBlogsIdInputModelType {
+  @IsString()
+  @Length(1, 30)
+  title: string;
+  @IsString()
+  @Length(1, 100)
+  shortDescription: string;
+  @IsString()
+  @Length(1, 1000)
+  content: string;
+}
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private readonly appService: AppService,
     private readonly blogsService: BlogsService,
+    private readonly postsService: PostsService,
     private readonly checkService: CheckService,
     private readonly blogsRepository: BlogsRepository,
     private readonly blogsQueryRepository: BlogsQueryRepository,
@@ -96,5 +110,14 @@ export class BlogsController {
   async getAllBlogs(@Query() queryParams: RequestBlogsQueryModel) {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
     return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
+  }
+
+  @Post(':id/posts')
+  async createPostByBlogsId(
+    @Param(':id') blogId: string,
+    @Body() inputPostCreateModel: CreatePostByBlogsIdInputModelType,
+  ) {
+    const postCreateModel = { ...inputPostCreateModel, blogId };
+    return await this.postsService.createPost(postCreateModel);
   }
 }
