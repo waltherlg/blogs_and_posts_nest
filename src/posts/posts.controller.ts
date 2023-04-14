@@ -87,9 +87,10 @@ export class PostController {
     return await this.postsService.updatePostById(postId, postUpdateInputModel);
   }
   @Delete(':id')
-  async deleteBlogById(@Param('id') postId: string) {
-    const isBlogExist = this.checkService.isBlogExist(postId);
-    if (!isBlogExist) {
+  @HttpCode(204)
+  async deletePostById(@Param('id') postId: string) {
+    const isPostExist = this.checkService.isPostExist(postId);
+    if (!isPostExist) {
       throw new NotFoundException([
         { message: 'post not found', field: 'post' },
       ]);

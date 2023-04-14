@@ -87,92 +87,25 @@ describe('PostsController (e2e)', () => {
     createdPostId = createdResponseOfFirstPost.id;
 
     expect(createdResponseOfFirstPost).toEqual({
-      id: createdBlogId,
-      name: 'BlogForPosts',
-      description: 'description BlogForPosts',
-      websiteUrl: 'https://www.someweb.com',
+      id: createdPostId,
+      title: 'newCreatedPost',
+      shortDescription: 'newPostsShortDescription',
+      content: 'some content',
+      blogId: createdBlogId,
+      blogName: 'BlogForPosts',
       createdAt: expect.any(String),
-      isMembership: false,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
     });
   });
 
-  it('01-05 /blogs GET = 200 return all Posts with pagination', async () => {
+  it('01-05 /posts GET = 200 return all Posts with pagination', async () => {
     const createResponse = await request(app.getHttpServer())
-      .get(endpoints.blogs)
-      .expect(200);
-    const createdResponse = createResponse.body;
-
-    expect(createdResponse).toEqual({
-      pagesCount: 1,
-      page: 1,
-      pageSize: 10,
-      totalCount: 2,
-      items: [
-        {
-          id: expect.any(String),
-          name: 'createdBlog2',
-          description: 'newDescription2',
-          websiteUrl: 'https://www.someweb2.com',
-          createdAt: expect.any(String),
-          isMembership: false,
-        },
-        {
-          id: expect.any(String),
-          name: 'createdBlog',
-          description: 'newDescription',
-          websiteUrl: 'https://www.someweb.com',
-          createdAt: expect.any(String),
-          isMembership: false,
-        },
-      ],
-    });
-  });
-
-  it('01-06 /blogs UPDATE = 204', async () => {
-    console.log(createdBlogId);
-    const createResponse = await request(app.getHttpServer())
-      .put(`${endpoints.blogs}/${createdBlogId}`)
-      .set('Authorization', `Basic ${basicAuthRight}`)
-      .send({
-        name: 'updatedBlog2',
-        description: 'updatedDescription2',
-        websiteUrl: 'https://www.updatedsomeweb2.com',
-      })
-      .expect(204);
-  });
-
-  it('01-07 /blogs GET = 200 return UPDATED blog by id', async () => {
-    const createResponse = await request(app.getHttpServer())
-      .get(`${endpoints.blogs}/${createdBlogId}`)
-      .expect(200);
-    const createdResponse = createResponse.body;
-
-    expect(createdResponse).toEqual({
-      id: createdBlogId,
-      name: 'updatedBlog2',
-      description: 'updatedDescription2',
-      websiteUrl: 'https://www.updatedsomeweb2.com',
-      createdAt: expect.any(String),
-      isMembership: false,
-    });
-  });
-
-  it('01-08 /blogs DELETE = 204', async () => {
-    const createResponse = await request(app.getHttpServer())
-      .delete(`${endpoints.blogs}/${createdBlogId}`)
-      .set('Authorization', `Basic ${basicAuthRight}`)
-      .expect(204);
-  });
-
-  it('01-09 /blogs GET = 404 not found deleted blog', async () => {
-    const createResponse = await request(app.getHttpServer())
-      .get(`${endpoints.blogs}/${createdBlogId}`)
-      .expect(404);
-  });
-
-  it('01-05 /blogs GET = 200 return ONE blog with pagination', async () => {
-    const createResponse = await request(app.getHttpServer())
-      .get(endpoints.blogs)
+      .get(endpoints.posts)
       .expect(200);
     const createdResponse = createResponse.body;
 
@@ -183,14 +116,93 @@ describe('PostsController (e2e)', () => {
       totalCount: 1,
       items: [
         {
-          id: expect.any(String),
-          name: 'createdBlog2',
-          description: 'newDescription2',
-          websiteUrl: 'https://www.someweb2.com',
+          id: createdPostId,
+          title: 'newCreatedPost',
+          shortDescription: 'newPostsShortDescription',
+          content: 'some content',
+          blogId: createdBlogId,
+          blogName: 'BlogForPosts',
           createdAt: expect.any(String),
-          isMembership: false,
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
         },
       ],
     });
   });
+
+  it('01-06 /posts UPDATE = 204', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .put(`${endpoints.posts}/${createdPostId}`)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .send({
+        title: 'updatedTitle',
+        shortDescription: 'updatedShortDescription',
+        content: 'updated some content',
+      })
+      .expect(204);
+  });
+
+  it('01-07 /posts GET = 200 return UPDATED post by id', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .get(`${endpoints.posts}/${createdPostId}`)
+      .expect(200);
+    const createdResponse = createResponse.body;
+
+    expect(createdResponse).toEqual({
+      id: createdPostId,
+      title: 'updatedTitle',
+      shortDescription: 'updatedShortDescription',
+      content: 'updated some content',
+      blogId: createdBlogId,
+      blogName: 'BlogForPosts',
+      createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    });
+  });
+
+  it('01-08 /posts DELETE = 204', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .delete(`${endpoints.posts}/${createdPostId}`)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .expect(204);
+  });
+
+  it('01-09 /posts GET = 404 not found deleted posts', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .get(`${endpoints.posts}/${createdPostId}`)
+      .expect(404);
+  });
+
+  // it('01-05 /posts GET = 200 return ONE blog with pagination', async () => {
+  //   const createResponse = await request(app.getHttpServer())
+  //     .get(endpoints.blogs)
+  //     .expect(200);
+  //   const createdResponse = createResponse.body;
+  //
+  //   expect(createdResponse).toEqual({
+  //     pagesCount: 1,
+  //     page: 1,
+  //     pageSize: 10,
+  //     totalCount: 1,
+  //     items: [
+  //       {
+  //         id: expect.any(String),
+  //         name: 'createdBlog2',
+  //         description: 'newDescription2',
+  //         websiteUrl: 'https://www.someweb2.com',
+  //         createdAt: expect.any(String),
+  //         isMembership: false,
+  //       },
+  //     ],
+  //   });
+  // });
 });
