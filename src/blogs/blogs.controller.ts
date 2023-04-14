@@ -22,6 +22,7 @@ import {
 import { Length, IsString, IsUrl } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
 import { PostsService } from '../posts/posts.service';
+import { PostsQueryRepository } from '../posts/posts.query.repository';
 
 export class CreateBlogInputModelType {
   @IsString()
@@ -60,6 +61,7 @@ export class BlogsController {
     private readonly checkService: CheckService,
     private readonly blogsRepository: BlogsRepository,
     private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
   @Post()
   async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
@@ -114,10 +116,11 @@ export class BlogsController {
 
   @Post(':id/posts')
   async createPostByBlogsId(
-    @Param(':id') blogId: string,
+    @Param('id') blogId: string,
     @Body() inputPostCreateModel: CreatePostByBlogsIdInputModelType,
   ) {
-    const postCreateModel = { ...inputPostCreateModel, blogId };
-    return await this.postsService.createPost(postCreateModel);
+    const postCreateModel = { ...inputPostCreateModel, blogId: blogId };
+    const createdPostId = await this.postsService.createPost(postCreateModel);
+    return await this.postsQueryRepository.getPostById(createdPostId);
   }
 }

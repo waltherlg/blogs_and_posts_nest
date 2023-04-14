@@ -182,6 +182,39 @@ describe('PostsController (e2e)', () => {
       .expect(404);
   });
 
+  let secondCreatedPostsId: string;
+
+  it('01-10 /blogs POST = 201 create new post, using blogs controller', async () => {
+    const testsResponse = await request(app.getHttpServer())
+      .post(`${endpoints.blogs}/${createdBlogId}/posts`)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .send({
+        title: 'PostByBlogsId',
+        shortDescription: 'newPosts created by BlogsController',
+        content: 'some content',
+      })
+      .expect(201);
+
+    const createdResponseOfSecondPost = testsResponse.body;
+    secondCreatedPostsId = createdResponseOfSecondPost.id;
+
+    expect(createdResponseOfSecondPost).toEqual({
+      id: secondCreatedPostsId,
+      title: 'PostByBlogsId',
+      shortDescription: 'newPosts created by BlogsController',
+      content: 'some content',
+      blogId: createdBlogId,
+      blogName: 'BlogForPosts',
+      createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    });
+  });
+
   // it('01-05 /posts GET = 200 return ONE blog with pagination', async () => {
   //   const createResponse = await request(app.getHttpServer())
   //     .get(endpoints.blogs)

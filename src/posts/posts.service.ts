@@ -13,8 +13,6 @@ export class PostsService {
   async createPost(
     postCreateInputModel: CreatePostInputModelType,
   ): Promise<string> {
-    console.log('postCreateInputModel ', postCreateInputModel);
-    console.log('postCreateInputModel.blogId ', postCreateInputModel.blogId);
     const blog = await this.blogRepository.getBlogDBTypeById(
       postCreateInputModel.blogId,
     );
