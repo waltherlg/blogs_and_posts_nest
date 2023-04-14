@@ -95,7 +95,9 @@ export class Post {
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 PostSchema.methods = {
-  prepareBlogForOutput: Post.prototype.preparePostForOutput,
+  countLikesAndDislikes: Post.prototype.countLikesAndDislikes,
+  getNewestLikes: Post.prototype.getNewestLikes,
+  preparePostForOutput: Post.prototype.preparePostForOutput,
 };
 
 export type PostTypeOutput = {

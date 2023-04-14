@@ -5,7 +5,7 @@ import { AppModule } from './../src/app.module';
 import { Types } from 'mongoose';
 import { endpoints } from './helpers/routing';
 
-describe('BlogsController (e2e)', () => {
+describe('PostsController (e2e)', () => {
   let app: INestApplication;
 
   const basicAuthRight = Buffer.from('admin:qwerty').toString('base64');
@@ -24,6 +24,7 @@ describe('BlogsController (e2e)', () => {
   });
 
   let createdBlogId: string;
+  let createdPostId: string;
 
   it('00-00 testing/all-data DELETE = 204 removeAllData', async () => {
     await request(app.getHttpServer())
@@ -31,9 +32,9 @@ describe('BlogsController (e2e)', () => {
       .expect(204);
   });
 
-  it('01-01 /blogs GET = 200 return empty array with pagination', async () => {
+  it('01-01 /posts GET = 200 return empty array with pagination', async () => {
     const createResponse = await request(app.getHttpServer())
-      .get(endpoints.blogs)
+      .get(endpoints.posts)
       .expect(200);
     const createdResponse = createResponse.body;
 
@@ -46,13 +47,13 @@ describe('BlogsController (e2e)', () => {
     });
   });
 
-  it('01-02 /blogs POST  = 201 create new blog if all is OK', async () => {
+  it('01-02 /blogs POST  = 201 create new blog for testing posts', async () => {
     const testsResponse = await request(app.getHttpServer())
       .post(endpoints.blogs)
       .set('Authorization', `Basic ${basicAuthRight}`)
       .send({
-        name: 'createdBlog',
-        description: 'newDescription',
+        name: 'BlogForPosts',
+        description: 'description BlogForPosts',
         websiteUrl: 'https://www.someweb.com',
       })
       .expect(201);
@@ -62,54 +63,40 @@ describe('BlogsController (e2e)', () => {
 
     expect(createdResponseOfFirstBlog).toEqual({
       id: createdBlogId,
-      name: 'createdBlog',
-      description: 'newDescription',
-      websiteUrl: 'https://www.someweb.com',
-      createdAt: createdResponseOfFirstBlog.createdAt,
-      isMembership: false,
-    });
-  });
-
-  it('01-03 /blogs GET = 200 return blog by id', async () => {
-    const createResponse = await request(app.getHttpServer())
-      .get(`${endpoints.blogs}/${createdBlogId}`)
-      .expect(200);
-    const createdResponse = createResponse.body;
-
-    expect(createdResponse).toEqual({
-      id: createdBlogId,
-      name: 'createdBlog',
-      description: 'newDescription',
+      name: 'BlogForPosts',
+      description: 'description BlogForPosts',
       websiteUrl: 'https://www.someweb.com',
       createdAt: expect.any(String),
       isMembership: false,
     });
   });
 
-  it('01-05 /blogs POST  = 201 create one more new blog if all is OK', async () => {
+  it('01-02 /posts POST  = 201 create new post if all is OK', async () => {
     const testsResponse = await request(app.getHttpServer())
-      .post(endpoints.blogs)
+      .post(endpoints.posts)
       .set('Authorization', `Basic ${basicAuthRight}`)
       .send({
-        name: 'createdBlog2',
-        description: 'newDescription2',
-        websiteUrl: 'https://www.someweb2.com',
+        title: 'newCreatedPost',
+        shortDescription: 'newPostsShortDescription',
+        content: 'some content',
+        blogId: createdBlogId,
       })
       .expect(201);
 
-    const createdResponse = testsResponse.body;
+    const createdResponseOfFirstPost = testsResponse.body;
+    createdPostId = createdResponseOfFirstPost.id;
 
-    expect(createdResponse).toEqual({
-      id: expect.any(String),
-      name: 'createdBlog2',
-      description: 'newDescription2',
-      websiteUrl: 'https://www.someweb2.com',
-      createdAt: createdResponse.createdAt,
+    expect(createdResponseOfFirstPost).toEqual({
+      id: createdBlogId,
+      name: 'BlogForPosts',
+      description: 'description BlogForPosts',
+      websiteUrl: 'https://www.someweb.com',
+      createdAt: expect.any(String),
       isMembership: false,
     });
   });
 
-  it('01-05 /blogs GET = 200 return all blogs with pagination', async () => {
+  it('01-05 /blogs GET = 200 return all Posts with pagination', async () => {
     const createResponse = await request(app.getHttpServer())
       .get(endpoints.blogs)
       .expect(200);

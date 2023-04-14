@@ -3,8 +3,8 @@ import { PostDBType } from './posts.types';
 import { Types } from 'mongoose';
 import { CreatePostInputModelType } from './posts.controller';
 import { BlogsRepository } from '../blogs/blogs.repository';
-import { NotFoundException } from '@nestjs/common';
-
+import { Injectable, NotFoundException } from '@nestjs/common';
+@Injectable()
 export class PostsService {
   constructor(
     private readonly postsRepository: PostsRepository,
@@ -13,9 +13,12 @@ export class PostsService {
   async createPost(
     postCreateInputModel: CreatePostInputModelType,
   ): Promise<string> {
+    console.log('postCreateInputModel ', postCreateInputModel);
+    console.log('postCreateInputModel.blogId ', postCreateInputModel.blogId);
     const blog = await this.blogRepository.getBlogDBTypeById(
       postCreateInputModel.blogId,
     );
+    console.log('blog ', blog);
     if (!blog) {
       throw new NotFoundException();
     }

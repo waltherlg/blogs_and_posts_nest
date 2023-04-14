@@ -12,7 +12,7 @@ export class PostsQueryRepository {
     if (!Types.ObjectId.isValid(postId)) {
       return null;
     }
-    const post = await this.postModel.findById(postId);
+    const post: PostDocument = await this.postModel.findById(postId);
     if (!post) {
       return null;
     }
@@ -21,7 +21,7 @@ export class PostsQueryRepository {
 
   async getAllPosts(mergedQueryParams) {
     const postCount = await this.postModel.countDocuments({});
-    const post = await this.postModel
+    const posts = await this.postModel
       .find({})
       .skip(
         this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize),
@@ -33,19 +33,19 @@ export class PostsQueryRepository {
         ),
       });
 
-    const postsOutput = post.map((post: PostDocument) => {
+    const postsOutput = posts.map((post: PostDocument) => {
       return post.preparePostForOutput();
     });
     const pageCount = Math.ceil(postCount / +mergedQueryParams.pageSize);
 
-    const outputBlogs: PaginationOutputModel<PostTypeOutput> = {
+    const outputPosts: PaginationOutputModel<PostTypeOutput> = {
       pagesCount: pageCount,
       page: +mergedQueryParams.pageNumber,
       pageSize: +mergedQueryParams.pageSize,
       totalCount: postCount,
       items: postsOutput,
     };
-    return outputBlogs;
+    return outputPosts;
   }
 
   sortByDesc(sortDirection: string) {

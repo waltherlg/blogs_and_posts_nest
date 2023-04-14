@@ -25,9 +25,7 @@ export class BlogsRepository {
     return newBlog._id.toString();
   }
 
-  async getBlogDBTypeById(
-    blogId,
-  ): Promise<HydratedDocument<BlogDBType> | null> {
+  async getBlogDBTypeById(blogId): Promise<BlogDocument | null> {
     if (!Types.ObjectId.isValid(blogId)) {
       return null;
     }

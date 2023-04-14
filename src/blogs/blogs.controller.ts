@@ -70,12 +70,18 @@ export class BlogsController {
     @Param('id') blogsId: string,
     @Body() blogUpdateInputModel: UpdateBlogInputModelType,
   ) {
-    return await this.blogsService.updateBlogById(
+    const result = await this.blogsService.updateBlogById(
       blogsId,
       blogUpdateInputModel,
     );
+    if (result) {
+      return null;
+    } else {
+      throw new Error('blog not updated');
+    }
   }
   @Delete(':id')
+  @HttpCode(204)
   async deleteBlogById(@Param('id') blogId: string) {
     const isBlogExist = this.checkService.isBlogExist(blogId);
     if (!isBlogExist) {
