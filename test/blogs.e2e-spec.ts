@@ -24,7 +24,11 @@ describe('BlogsController (e2e)', () => {
 
   let createdBlogId: string;
 
-  it('01-05 /blogs GET = 200 return blog by id', async () => {
+  it('00-00 testing/all-data DELETE = 204 removeAllData', async () => {
+    await request(app.getHttpServer()).delete('testing/all-data').expect(204);
+  });
+
+  it('01-05 /blogs GET = 200 return empty array', async () => {
     const createResponse = await request(app.getHttpServer())
       .get(`/blogs`)
       .expect(200);
@@ -37,12 +41,6 @@ describe('BlogsController (e2e)', () => {
       totalCount: 0,
       items: [],
     });
-  });
-
-  it('00-00 testing/all-data DELETE = 204 removeAllData', async () => {
-    const testsResponse = await request(app.getHttpServer())
-      .delete('testing/all-data')
-      .expect(204);
   });
 
   it('01-04 /blogs POST  = 201 create new blog if all is OK', async () => {

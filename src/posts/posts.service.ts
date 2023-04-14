@@ -1,6 +1,4 @@
 import { PostsRepository } from './posts.repository';
-import { CheckService } from '../other.services/check.service';
-import { CreateBlogInputModelType } from '../blogs/blogs.controller';
 import { PostDBType } from './posts.types';
 import { Types } from 'mongoose';
 import { CreatePostInputModelType } from './posts.controller';

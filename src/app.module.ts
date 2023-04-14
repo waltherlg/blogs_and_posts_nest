@@ -13,6 +13,10 @@ import { CheckService } from './other.services/check.service';
 import { PostsRepository } from './posts/posts.repository';
 import { Post, PostSchema } from './posts/posts.types';
 import { PostsQueryRepository } from './posts/posts.query.repository';
+import { PostController } from './posts/posts.controller';
+import { TestingService } from './all.data/test.service';
+import { PostsService } from './posts/posts.service';
+import { TestingController } from './all.data/testing.controller';
 const mongoUri = process.env.MONGO_URL;
 
 @Module({
@@ -29,11 +33,18 @@ const mongoUri = process.env.MONGO_URL;
       },
     ]),
   ],
-  controllers: [AppController, BlogsController],
+  controllers: [
+    AppController,
+    BlogsController,
+    PostController,
+    TestingController,
+  ],
   providers: [
     AppService,
     BlogsService,
+    PostsService,
     CheckService,
+    TestingService,
     BlogsRepository,
     BlogsQueryRepository,
     PostsRepository,

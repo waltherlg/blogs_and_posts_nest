@@ -45,4 +45,8 @@ export class BlogsRepository {
     const blog = await this.blogModel.findById(blogId);
     return !!blog;
   }
+
+  async deleteAllBlogs() {
+    await this.blogModel.deleteMany({});
+  }
 }
