@@ -48,6 +48,38 @@ export class PostsQueryRepository {
     return outputPosts;
   }
 
+  async getAllPostsByBlogsId(
+    mergedQueryParams,
+    blogId,
+  ): Promise<PaginationOutputModel<Post>> {
+    const postCount = await this.postModel.countDocuments({ blogId: blogId });
+    const posts = await this.postModel
+      .find({ blogId: blogId })
+      .skip(
+        this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize),
+      )
+      .limit(+mergedQueryParams.pageSize)
+      .sort({
+        [mergedQueryParams.sortBy]: this.sortByDesc(
+          mergedQueryParams.sortDirection,
+        ),
+      });
+
+    const postsOutput = posts.map((post: PostDocument) => {
+      return post.preparePostForOutput();
+    });
+    const pageCount = Math.ceil(postCount / +mergedQueryParams.pageSize);
+
+    const outputPosts: PaginationOutputModel<PostTypeOutput> = {
+      pagesCount: pageCount,
+      page: +mergedQueryParams.pageNumber,
+      pageSize: +mergedQueryParams.pageSize,
+      totalCount: postCount,
+      items: postsOutput,
+    };
+    return outputPosts;
+  }
+
   sortByDesc(sortDirection: string) {
     return sortDirection === 'desc' ? -1 : 1;
   }

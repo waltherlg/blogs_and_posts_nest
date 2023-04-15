@@ -18,6 +18,7 @@ import {
   DEFAULT_BLOGS_QUERY_PARAMS,
   RequestQueryParamsModel,
   RequestBlogsQueryModel,
+  DEFAULT_QUERY_PARAMS,
 } from '../models/types';
 import { Length, IsString, IsUrl } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
@@ -122,5 +123,17 @@ export class BlogsController {
     const postCreateModel = { ...inputPostCreateModel, blogId: blogId };
     const createdPostId = await this.postsService.createPost(postCreateModel);
     return await this.postsQueryRepository.getPostById(createdPostId);
+  }
+
+  @Get(':id/posts')
+  async getAllPostsByBlogsId(
+    @Param('id') blogId: string,
+    @Query() queryParams: RequestQueryParamsModel,
+  ) {
+    const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
+    return await this.postsQueryRepository.getAllPostsByBlogsId(
+      mergedQueryParams,
+      blogId,
+    );
   }
 }
