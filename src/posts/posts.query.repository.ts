@@ -51,7 +51,7 @@ export class PostsQueryRepository {
   async getAllPostsByBlogsId(
     mergedQueryParams,
     blogId,
-  ): Promise<PaginationOutputModel<Post>> {
+  ): Promise<PaginationOutputModel<PostTypeOutput>> {
     const postCount = await this.postModel.countDocuments({ blogId: blogId });
     const posts = await this.postModel
       .find({ blogId: blogId })

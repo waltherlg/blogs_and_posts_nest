@@ -23,7 +23,7 @@ describe('PostsController (e2e)', () => {
     await app.init();
   });
 
-  let createdBlogId: string;
+  let firstCreatedBlogId: string;
   let createdPostId: string;
 
   it('00-00 testing/all-data DELETE = 204 removeAllData', async () => {
@@ -59,10 +59,10 @@ describe('PostsController (e2e)', () => {
       .expect(201);
 
     const createdResponseOfFirstBlog = testsResponse.body;
-    createdBlogId = createdResponseOfFirstBlog.id;
+    firstCreatedBlogId = createdResponseOfFirstBlog.id;
 
     expect(createdResponseOfFirstBlog).toEqual({
-      id: createdBlogId,
+      id: firstCreatedBlogId,
       name: 'BlogForPosts',
       description: 'description BlogForPosts',
       websiteUrl: 'https://www.someweb.com',
@@ -79,7 +79,7 @@ describe('PostsController (e2e)', () => {
         title: 'newCreatedPost',
         shortDescription: 'newPostsShortDescription',
         content: 'some content',
-        blogId: createdBlogId,
+        blogId: firstCreatedBlogId,
       })
       .expect(201);
 
@@ -91,7 +91,7 @@ describe('PostsController (e2e)', () => {
       title: 'newCreatedPost',
       shortDescription: 'newPostsShortDescription',
       content: 'some content',
-      blogId: createdBlogId,
+      blogId: firstCreatedBlogId,
       blogName: 'BlogForPosts',
       createdAt: expect.any(String),
       extendedLikesInfo: {
@@ -120,7 +120,7 @@ describe('PostsController (e2e)', () => {
           title: 'newCreatedPost',
           shortDescription: 'newPostsShortDescription',
           content: 'some content',
-          blogId: createdBlogId,
+          blogId: firstCreatedBlogId,
           blogName: 'BlogForPosts',
           createdAt: expect.any(String),
           extendedLikesInfo: {
@@ -157,7 +157,7 @@ describe('PostsController (e2e)', () => {
       title: 'updatedTitle',
       shortDescription: 'updatedShortDescription',
       content: 'updated some content',
-      blogId: createdBlogId,
+      blogId: firstCreatedBlogId,
       blogName: 'BlogForPosts',
       createdAt: expect.any(String),
       extendedLikesInfo: {
@@ -186,7 +186,7 @@ describe('PostsController (e2e)', () => {
 
   it('01-10 /blogs POST = 201 create new post, using blogs controller', async () => {
     const testsResponse = await request(app.getHttpServer())
-      .post(`${endpoints.blogs}/${createdBlogId}/posts`)
+      .post(`${endpoints.blogs}/${firstCreatedBlogId}/posts`)
       .set('Authorization', `Basic ${basicAuthRight}`)
       .send({
         title: 'PostByBlogsId',
@@ -203,7 +203,7 @@ describe('PostsController (e2e)', () => {
       title: 'PostByBlogsId',
       shortDescription: 'newPosts created by BlogsController',
       content: 'some content',
-      blogId: createdBlogId,
+      blogId: firstCreatedBlogId,
       blogName: 'BlogForPosts',
       createdAt: expect.any(String),
       extendedLikesInfo: {
@@ -215,27 +215,295 @@ describe('PostsController (e2e)', () => {
     });
   });
 
-  // it('01-05 /posts GET = 200 return ONE blog with pagination', async () => {
-  //   const createResponse = await request(app.getHttpServer())
-  //     .get(endpoints.blogs)
-  //     .expect(200);
-  //   const createdResponse = createResponse.body;
-  //
-  //   expect(createdResponse).toEqual({
-  //     pagesCount: 1,
-  //     page: 1,
-  //     pageSize: 10,
-  //     totalCount: 1,
-  //     items: [
-  //       {
-  //         id: expect.any(String),
-  //         name: 'createdBlog2',
-  //         description: 'newDescription2',
-  //         websiteUrl: 'https://www.someweb2.com',
-  //         createdAt: expect.any(String),
-  //         isMembership: false,
-  //       },
-  //     ],
-  //   });
-  // });
+  let thirdCreatedPostsId: string;
+
+  it('01-11 /blogs POST = 201 create second post, using blogs controller', async () => {
+    const testsResponse = await request(app.getHttpServer())
+      .post(`${endpoints.blogs}/${firstCreatedBlogId}/posts`)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .send({
+        title: 'thirdPostByBlogsId',
+        shortDescription: 'third Posts created by BlogsController',
+        content: 'some content',
+      })
+      .expect(201);
+
+    const createdResponseOfThirdPost = testsResponse.body;
+    thirdCreatedPostsId = createdResponseOfThirdPost.id;
+
+    expect(createdResponseOfThirdPost).toEqual({
+      id: thirdCreatedPostsId,
+      title: 'thirdPostByBlogsId',
+      shortDescription: 'third Posts created by BlogsController',
+      content: 'some content',
+      blogId: firstCreatedBlogId,
+      blogName: 'BlogForPosts',
+      createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    });
+  });
+
+  it('01-12 /posts GET = 200 return two Posts with pagination', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .get(endpoints.posts)
+      .expect(200);
+    const createdResponse = createResponse.body;
+
+    expect(createdResponse).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: thirdCreatedPostsId,
+          title: 'thirdPostByBlogsId',
+          shortDescription: 'third Posts created by BlogsController',
+          content: 'some content',
+          blogId: firstCreatedBlogId,
+          blogName: 'BlogForPosts',
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+        {
+          id: secondCreatedPostsId,
+          title: 'PostByBlogsId',
+          shortDescription: 'newPosts created by BlogsController',
+          content: 'some content',
+          blogId: firstCreatedBlogId,
+          blogName: 'BlogForPosts',
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+      ],
+    });
+  });
+
+  let secondCreatedBlogId: string;
+
+  it('01-13 /blogs POST  = 201 create second blog for testing posts', async () => {
+    const testsResponse = await request(app.getHttpServer())
+      .post(endpoints.blogs)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .send({
+        name: 'second BlogForPosts',
+        description: 'second description BlogForPosts',
+        websiteUrl: 'https://www.someweb.com',
+      })
+      .expect(201);
+
+    const createdResponseOfSecondBlog = testsResponse.body;
+    secondCreatedBlogId = createdResponseOfSecondBlog.id;
+
+    expect(createdResponseOfSecondBlog).toEqual({
+      id: secondCreatedBlogId,
+      name: 'second BlogForPosts',
+      description: 'second description BlogForPosts',
+      websiteUrl: 'https://www.someweb.com',
+      createdAt: expect.any(String),
+      isMembership: false,
+    });
+  });
+
+  let fourthCreatedPostsId: string;
+
+  it('01-14 /blogs POST = 201 create fourth post, using blogs controller(second blog)', async () => {
+    const testsResponse = await request(app.getHttpServer())
+      .post(`${endpoints.blogs}/${secondCreatedBlogId}/posts`)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .send({
+        title: 'fourthPostByBlogsId',
+        shortDescription: 'fourth Posts created by second BlogsId',
+        content: 'some content',
+      })
+      .expect(201);
+
+    const fourthResponseOfCreatedPost = testsResponse.body;
+    fourthCreatedPostsId = fourthResponseOfCreatedPost.id;
+
+    expect(fourthResponseOfCreatedPost).toEqual({
+      id: fourthCreatedPostsId,
+      title: 'fourthPostByBlogsId',
+      shortDescription: 'fourth Posts created by second BlogsId',
+      content: 'some content',
+      blogId: secondCreatedBlogId,
+      blogName: 'second BlogForPosts',
+      createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    });
+  });
+
+  it('01-15 /posts POST  = 201 make a fifth post for the second blog', async () => {
+    const testsResponse = await request(app.getHttpServer())
+      .post(endpoints.posts)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .send({
+        title: 'fifthCreatedPost',
+        shortDescription: 'fifth Posts for the second blog',
+        content: 'some content',
+        blogId: secondCreatedBlogId,
+      })
+      .expect(201);
+
+    const createdResponseOfFirstPost = testsResponse.body;
+    createdPostId = createdResponseOfFirstPost.id;
+
+    expect(createdResponseOfFirstPost).toEqual({
+      id: createdPostId,
+      title: 'fifthCreatedPost',
+      shortDescription: 'fifth Posts for the second blog',
+      content: 'some content',
+      blogId: secondCreatedBlogId,
+      blogName: 'second BlogForPosts',
+      createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    });
+  });
+
+  it('01-16 /posts GET = 200 return four Posts with pagination', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .get(endpoints.posts)
+      .expect(200);
+    const createdResponse = createResponse.body;
+
+    expect(createdResponse).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 4,
+      items: [
+        {
+          id: createdPostId,
+          title: 'fifthCreatedPost',
+          shortDescription: 'fifth Posts for the second blog',
+          content: 'some content',
+          blogId: secondCreatedBlogId,
+          blogName: 'second BlogForPosts',
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+        {
+          id: fourthCreatedPostsId,
+          title: 'fourthPostByBlogsId',
+          shortDescription: 'fourth Posts created by second BlogsId',
+          content: 'some content',
+          blogId: secondCreatedBlogId,
+          blogName: 'second BlogForPosts',
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+        {
+          id: thirdCreatedPostsId,
+          title: 'thirdPostByBlogsId',
+          shortDescription: 'third Posts created by BlogsController',
+          content: 'some content',
+          blogId: firstCreatedBlogId,
+          blogName: 'BlogForPosts',
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+        {
+          id: secondCreatedPostsId,
+          title: 'PostByBlogsId',
+          shortDescription: 'newPosts created by BlogsController',
+          content: 'some content',
+          blogId: firstCreatedBlogId,
+          blogName: 'BlogForPosts',
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+      ],
+    });
+  });
+
+  it('01-17 /posts GET = 200 return two Posts for second Blog', async () => {
+    const createResponse = await request(app.getHttpServer())
+      .get(`${endpoints.blogs}/${secondCreatedBlogId}/posts`)
+      .expect(200);
+    const createdResponse = createResponse.body;
+
+    expect(createdResponse).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 2,
+      items: [
+        {
+          id: createdPostId,
+          title: 'fifthCreatedPost',
+          shortDescription: 'fifth Posts for the second blog',
+          content: 'some content',
+          blogId: secondCreatedBlogId,
+          blogName: 'second BlogForPosts',
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+        {
+          id: fourthCreatedPostsId,
+          title: 'fourthPostByBlogsId',
+          shortDescription: 'fourth Posts created by second BlogsId',
+          content: 'some content',
+          blogId: secondCreatedBlogId,
+          blogName: 'second BlogForPosts',
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        },
+      ],
+    });
+  });
 });
