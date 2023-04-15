@@ -58,8 +58,19 @@ export class User {
   likedComments: Array<CommentsLikeType>;
   @Prop()
   likedPosts: Array<PostsLikeType>;
+  prepareUserForOutput() {
+    return {
+      id: this._id.toString(),
+      login: this.login,
+      email: this.email,
+      createdAt: this.createdAt,
+    };
+  }
 }
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UsersSchema = SchemaFactory.createForClass(User);
+UsersSchema.methods = {
+  prepareUserForOutput: Post.prototype.preparePostForOutput(),
+};
 
 export type UserTypeOutput = {
   id: string;
