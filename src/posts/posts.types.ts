@@ -22,7 +22,6 @@ export type PostDocument = HydratedDocument<Post>;
 @Schema()
 export class Post {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId })
-  @Prop()
   _id: Types.ObjectId;
   @Prop()
   title: string;
