@@ -12,7 +12,7 @@ export class BlogsQueryRepository {
     if (!Types.ObjectId.isValid(blogId)) {
       return null;
     }
-    const blog = await this.blogModel.findById(blogId);
+    const blog: BlogDocument = await this.blogModel.findById(blogId);
     if (!blog) {
       return null;
     }
@@ -55,7 +55,7 @@ export class BlogsQueryRepository {
           ),
         });
     }
-    const blogsOutput = blogs.map((blog: HydratedDocument<Blog>) => {
+    const blogsOutput = blogs.map((blog: BlogDocument) => {
       return blog.prepareBlogForOutput();
     });
     const pageCount = Math.ceil(blogsCount / +mergedQueryParams.pageSize);

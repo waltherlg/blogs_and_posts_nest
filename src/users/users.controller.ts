@@ -25,6 +25,7 @@ export class UsersController {
   @Post()
   async createUser(@Body() userCreateInputModel: CreateUserInputModelType) {
     const newUsersId = await this.usersService.createUser(userCreateInputModel);
-    return await this.usersQueryRepository.getUserById(newUsersId);
+    const user = await this.usersQueryRepository.getUserById(newUsersId);
+    return user;
   }
 }

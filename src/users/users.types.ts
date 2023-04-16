@@ -1,6 +1,5 @@
 import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Post } from '../posts/posts.types';
 
 export type CommentsLikeType = {
   commentsId: string;
@@ -30,6 +29,13 @@ export class UserDBType {
     public likedPosts: Array<PostsLikeType>,
   ) {}
 }
+
+export type UserTypeOutput = {
+  id: string;
+  login: string;
+  email: string;
+  createdAt: string;
+};
 
 export type UserDocument = HydratedDocument<User>;
 @Schema()
@@ -67,14 +73,7 @@ export class User {
     };
   }
 }
-export const UsersSchema = SchemaFactory.createForClass(User);
-UsersSchema.methods = {
-  prepareUserForOutput: User.prototype.prepareUserForOutput(),
-};
-
-export type UserTypeOutput = {
-  id: string;
-  login: string;
-  email: string;
-  createdAt: string;
+export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.methods = {
+  prepareUserForOutput: User.prototype.prepareUserForOutput,
 };
