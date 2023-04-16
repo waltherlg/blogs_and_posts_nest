@@ -17,6 +17,11 @@ import { PostController } from './posts/posts.controller';
 import { TestingService } from './all.data/test.service';
 import { PostsService } from './posts/posts.service';
 import { TestingController } from './all.data/testing.controller';
+import { UsersService } from './users/users.service';
+import { BcryptService } from './other.services/bcrypt.service';
+import { UsersRepository } from './users/users.repository';
+import { UsersController } from './users/users.controller';
+import { User, UsersSchema } from './users/users.types';
 const mongoUri = process.env.MONGO_URL;
 
 @Module({
@@ -31,24 +36,32 @@ const mongoUri = process.env.MONGO_URL;
         name: Post.name,
         schema: PostSchema,
       },
+      {
+        name: User.name,
+        schema: UsersSchema,
+      },
     ]),
   ],
   controllers: [
     AppController,
     BlogsController,
     PostController,
+    UsersController,
     TestingController,
   ],
   providers: [
     AppService,
     BlogsService,
     PostsService,
+    UsersService,
+    BcryptService,
     CheckService,
     TestingService,
     BlogsRepository,
     BlogsQueryRepository,
     PostsRepository,
     PostsQueryRepository,
+    UsersRepository,
   ],
 })
 export class AppModule {}
