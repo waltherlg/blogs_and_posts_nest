@@ -22,6 +22,7 @@ import { BcryptService } from './other.services/bcrypt.service';
 import { UsersRepository } from './users/users.repository';
 import { UsersController } from './users/users.controller';
 import { User, UsersSchema } from './users/users.types';
+import { UsersQueryRepository } from './users/users.query.repository';
 const mongoUri = process.env.MONGO_URL;
 
 @Module({
@@ -62,6 +63,7 @@ const mongoUri = process.env.MONGO_URL;
     PostsRepository,
     PostsQueryRepository,
     UsersRepository,
+    UsersQueryRepository,
   ],
 })
 export class AppModule {}

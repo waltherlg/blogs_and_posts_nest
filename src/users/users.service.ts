@@ -18,7 +18,7 @@ export class UsersService {
       userCreateInputModel.login,
       passwordHash,
       userCreateInputModel.email,
-      new Date().toDateString(),
+      new Date().toISOString(),
       null,
       null,
       true,

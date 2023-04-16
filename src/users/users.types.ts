@@ -69,7 +69,7 @@ export class User {
 }
 export const UsersSchema = SchemaFactory.createForClass(User);
 UsersSchema.methods = {
-  prepareUserForOutput: Post.prototype.preparePostForOutput(),
+  prepareUserForOutput: User.prototype.prepareUserForOutput(),
 };
 
 export type UserTypeOutput = {

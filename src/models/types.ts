@@ -24,6 +24,20 @@ export const DEFAULT_BLOGS_QUERY_PARAMS: RequestBlogsQueryModel = {
   pageSize: '10',
 };
 
+export const DEFAULT_USERS_QUERY_PARAMS: RequestUsersQueryModel = {
+  sortBy: 'createdAt',
+  sortDirection: 'desc',
+  pageNumber: '1',
+  pageSize: '10',
+  searchLoginTerm: '',
+  searchEmailTerm: '',
+};
+
+export type RequestUsersQueryModel = RequestQueryParamsModel & {
+  searchLoginTerm: string;
+  searchEmailTerm: string;
+};
+
 export type PaginationOutputModel<T> = {
   pagesCount: number;
   page: number;
