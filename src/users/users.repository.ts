@@ -36,7 +36,7 @@ export class UsersRepository {
     return user;
   }
 
-  async deleteAllUser() {
+  async deleteAllUsers() {
     await this.userModel.deleteMany({});
   }
 }
