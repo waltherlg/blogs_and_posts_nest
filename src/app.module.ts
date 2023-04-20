@@ -23,6 +23,7 @@ import { UsersRepository } from './users/users.repository';
 import { UsersController } from './users/users.controller';
 import { User, UserSchema } from './users/users.types';
 import { UsersQueryRepository } from './users/users.query.repository';
+import { AuthService } from './authorization/auth.service';
 const mongoUri = process.env.MONGO_URL;
 
 @Module({
@@ -58,6 +59,7 @@ const mongoUri = process.env.MONGO_URL;
     BcryptService,
     CheckService,
     TestingService,
+    AuthService,
     BlogsRepository,
     BlogsQueryRepository,
     PostsRepository,

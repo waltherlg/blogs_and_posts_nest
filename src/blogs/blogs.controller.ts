@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AppService } from '../app.service';
 import { BlogsService } from './blogs.service';
@@ -24,6 +25,7 @@ import { Length, IsString, IsUrl } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
 import { PostsService } from '../posts/posts.service';
 import { PostsQueryRepository } from '../posts/posts.query.repository';
+import { BasicAuthGuard } from '../guards/auth.guards';
 
 export class CreateBlogInputModelType {
   @IsString()
@@ -64,6 +66,7 @@ export class BlogsController {
     private readonly blogsQueryRepository: BlogsQueryRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
     const newBlogsId = await this.blogsService.createBlog(blogCreateInputModel);
@@ -80,7 +83,7 @@ export class BlogsController {
     }
     return blog;
   }
-
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(204)
   async updateBlogById(
@@ -97,6 +100,7 @@ export class BlogsController {
       throw new Error('blog not updated');
     }
   }
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deleteBlogById(@Param('id') blogId: string) {
@@ -114,7 +118,7 @@ export class BlogsController {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
     return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
   }
-
+  @UseGuards(BasicAuthGuard)
   @Post(':id/posts')
   async createPostByBlogsId(
     @Param('id') blogId: string,

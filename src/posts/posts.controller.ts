@@ -9,19 +9,16 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AppService } from '../app.service';
-import {
-  DEFAULT_BLOGS_QUERY_PARAMS,
-  RequestQueryParamsModel,
-  RequestBlogsQueryModel,
-  DEFAULT_QUERY_PARAMS,
-} from '../models/types';
+import { RequestQueryParamsModel, DEFAULT_QUERY_PARAMS } from '../models/types';
 import { Length, IsString, IsUrl } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
 import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
 import { PostsQueryRepository } from './posts.query.repository';
+import { BasicAuthGuard } from '../guards/auth.guards';
 
 export class CreatePostInputModelType {
   @IsString()
@@ -61,6 +58,7 @@ export class PostController {
     private readonly postsRepository: PostsRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createPost(@Body() postCreateInputModel: CreatePostInputModelType) {
     const newPostId = await this.postsService.createPost(postCreateInputModel);
@@ -77,7 +75,7 @@ export class PostController {
     }
     return post;
   }
-
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(204)
   async updatePostById(
@@ -86,6 +84,7 @@ export class PostController {
   ) {
     return await this.postsService.updatePostById(postId, postUpdateInputModel);
   }
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deletePostById(@Param('id') postId: string) {
