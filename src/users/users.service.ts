@@ -10,7 +10,11 @@ export class UsersService {
     private readonly dtoFactory: DTOFactory,
   ) {}
   async createUser(userCreateInputModel) {
-    const userDTO = await this.dtoFactory.createUserDTO(userCreateInputModel);
+    const userCreateModel = {
+      ...userCreateInputModel,
+      isConfirmed: true,
+    };
+    const userDTO = await this.dtoFactory.createUserDTO(userCreateModel);
     const newUsersId = await this.usersRepository.createUser(userDTO);
     return newUsersId;
   }

@@ -24,10 +24,32 @@ import { UsersController } from './users/users.controller';
 import { User, UserSchema } from './users/users.types';
 import { UsersQueryRepository } from './users/users.query.repository';
 import { AuthService } from './authorization/auth.service';
+import { DTOFactory } from './helpers/usersDTOfactory';
+import { AuthController } from './authorization/auth.controller';
+import { EmailManager } from './managers/email-manager';
+import { EmailAdapter } from './adapters/email-adapter';
+import { MailerService } from '@nestjs-modules/mailer/dist/mailer.service';
+import { MailerModule } from '@nestjs-modules/mailer';
 const mongoUri = process.env.MONGO_URL;
+const emailUser = process.env.MAIL_USER;
+const emailPassword = process.env.MAIL_PASSWORD;
+if (!emailUser || !emailPassword) {
+  throw new Error('password or user for emailAdapter not found');
+}
 
 @Module({
   imports: [
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: emailUser,
+          pass: emailPassword,
+        },
+      },
+    }),
     MongooseModule.forRoot(mongoUri, { dbName: 'blogsAndPosts' }),
     MongooseModule.forFeature([
       {
@@ -49,6 +71,7 @@ const mongoUri = process.env.MONGO_URL;
     BlogsController,
     PostController,
     UsersController,
+    AuthController,
     TestingController,
   ],
   providers: [
@@ -60,6 +83,9 @@ const mongoUri = process.env.MONGO_URL;
     CheckService,
     TestingService,
     AuthService,
+    DTOFactory,
+    EmailManager,
+    EmailAdapter,
     BlogsRepository,
     BlogsQueryRepository,
     PostsRepository,

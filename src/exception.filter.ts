@@ -33,14 +33,26 @@ export class HttpExceptionFilter implements ExceptionFilter {
         errors: [],
       };
       const responseBody: any = exception.getResponse();
+      console.log(responseBody);
       responseBody.message.forEach((m) => errorsResponse.errors.push(m));
       response.status(status).json(errorsResponse);
     } else {
+      const responseBody: any = exception.getResponse();
+      const match = responseBody.match(/^\w+/);
+      const field = match ? match[0] : 'unknown';
       response.status(status).json({
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: request.url,
+        errors: [
+          {
+            message: responseBody,
+            field: field,
+          },
+        ],
       });
+      // response.status(status).json({
+      //   statusCode: status,
+      //   timestamp: new Date().toISOString(),
+      //   path: request.url,
+      // });
     }
   }
 }

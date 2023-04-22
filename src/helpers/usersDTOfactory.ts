@@ -1,7 +1,8 @@
 import { UserDBType } from '../users/users.types';
 import { Types } from 'mongoose';
 import { BcryptService } from '../other.services/bcrypt.service';
-
+import { Injectable } from '@nestjs/common';
+@Injectable()
 export class DTOFactory {
   constructor(private readonly bcryptService: BcryptService) {}
   async createUserDTO(creatUserData: creatUserDataType) {
@@ -14,8 +15,8 @@ export class DTOFactory {
       passwordHash,
       creatUserData.email,
       new Date().toISOString(),
-      null,
-      null,
+      creatUserData.confirmationCode || null,
+      creatUserData.expirationDateOfConfirmationCode || null,
       creatUserData.isConfirmed || false,
       null,
       null,
@@ -31,4 +32,6 @@ type creatUserDataType = {
   password: string;
   email: string;
   isConfirmed?: boolean;
+  confirmationCode?: string;
+  expirationDateOfConfirmationCode?: Date;
 };
