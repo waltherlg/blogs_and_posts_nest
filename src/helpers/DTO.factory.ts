@@ -5,19 +5,19 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class DTOFactory {
   constructor(private readonly bcryptService: BcryptService) {}
-  async createUserDTO(creatUserData: creatUserDataType) {
+  async createUserDTO(createUserData: createUserDataType) {
     const passwordHash = await this.bcryptService.hashPassword(
-      creatUserData.password,
+      createUserData.password,
     );
     const userDTO = new UserDBType(
       new Types.ObjectId(),
-      creatUserData.login,
+      createUserData.login,
       passwordHash,
-      creatUserData.email,
+      createUserData.email,
       new Date().toISOString(),
-      creatUserData.confirmationCode || null,
-      creatUserData.expirationDateOfConfirmationCode || null,
-      creatUserData.isConfirmed || false,
+      createUserData.confirmationCode || null,
+      createUserData.expirationDateOfConfirmationCode || null,
+      createUserData.isConfirmed || false,
       null,
       null,
       [],
@@ -27,7 +27,7 @@ export class DTOFactory {
   }
 }
 
-type creatUserDataType = {
+type createUserDataType = {
   login: string;
   password: string;
   email: string;
