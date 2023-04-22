@@ -77,3 +77,9 @@ export const UserSchema = SchemaFactory.createForClass(User);
 UserSchema.methods = {
   prepareUserForOutput: User.prototype.prepareUserForOutput,
 };
+
+export type PasswordRecoveryModel = {
+  email: string;
+  passwordRecoveryCode: string;
+  expirationDateOfRecoveryCode: Date;
+};

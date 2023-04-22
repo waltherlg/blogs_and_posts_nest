@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles --forceExit"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
@@ -32,6 +33,7 @@
     "dotenv": "^16.0.3",
     "mongodb": "^5.1.0",
     "mongoose": "^7.0.3",
+    "nodemailer": "^6.9.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "uuid": "^9.0.0"
