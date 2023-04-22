@@ -24,7 +24,7 @@ import { UsersController } from './users/users.controller';
 import { User, UserSchema } from './users/users.types';
 import { UsersQueryRepository } from './users/users.query.repository';
 import { AuthService } from './authorization/auth.service';
-import { DTOFactory } from './helpers/usersDTOfactory';
+import { DTOFactory } from './helpers/DTO.factory';
 import { AuthController } from './authorization/auth.controller';
 import { EmailManager } from './managers/email-manager';
 import { EmailAdapter } from './adapters/email-adapter';
