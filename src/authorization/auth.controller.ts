@@ -12,8 +12,8 @@ import { UsersQueryRepository } from '../users/users.query.repository';
 import { CheckService } from '../other.services/check.service';
 import {
   CustomisableException,
-  EmailConflictException,
-  LoginConflictException,
+  EmailAlreadyExistException,
+  LoginAlreadyExistException,
 } from '../exceptions/custom.exceptions';
 @Controller('auth')
 export class AuthController {
@@ -26,10 +26,10 @@ export class AuthController {
   @Post('registration')
   async registration(@Body() userCreateInputModel: CreateUserInputModelType) {
     if (await this.checkService.isEmailExist(userCreateInputModel.email)) {
-      throw new EmailConflictException();
+      throw new EmailAlreadyExistException();
     }
     if (await this.checkService.isLoginExist(userCreateInputModel.login)) {
-      throw new LoginConflictException();
+      throw new LoginAlreadyExistException();
     }
     const newUsersId = await this.authService.registerUser(
       userCreateInputModel,
