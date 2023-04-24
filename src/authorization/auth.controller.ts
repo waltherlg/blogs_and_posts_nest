@@ -4,6 +4,8 @@ import {
   Body,
   ConflictException,
   Controller,
+  HttpCode,
+  HttpStatus,
   Injectable,
   Post,
 } from '@nestjs/common';
@@ -15,6 +17,7 @@ import {
   EmailAlreadyExistException,
   LoginAlreadyExistException,
 } from '../exceptions/custom.exceptions';
+import { IsEmail, IsString, Length, Matches } from 'class-validator';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -37,4 +40,34 @@ export class AuthController {
     const user = await this.usersQueryRepository.getUserById(newUsersId);
     return user;
   }
+  @Post('registration-email-resending')
+  @HttpCode(204)
+  async registrationEmailResending(
+    @Body() email: registrationEmailResendingInput,
+  ) {
+    if (!(await this.checkService.isEmailExist(email.email))) {
+      throw new CustomisableException('email', 'email not exist', 400);
+    }
+    if (await this.checkService.isEmailConfirmed(email.email)) {
+      throw new CustomisableException('email', 'email already confirmed', 400);
+    }
+    const result = await this.authService.registrationEmailResending(
+      email.email,
+    );
+    if (result) {
+      return true;
+    }
+    throw new CustomisableException(
+      'email',
+      'the application failed to send an email',
+      400,
+    );
+  }
+}
+export class registrationEmailResendingInput {
+  @IsString()
+  @IsEmail()
+  @Length(1, 100)
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  email: string;
 }

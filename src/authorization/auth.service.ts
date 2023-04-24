@@ -9,6 +9,7 @@ import { DTOFactory } from '../helpers/DTO.factory';
 import { EmailManager } from '../managers/email-manager';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
+import { CustomisableException } from '../exceptions/custom.exceptions';
 @Injectable()
 export class AuthService {
   constructor(
@@ -50,5 +51,37 @@ export class AuthService {
       throw new InternalServerErrorException();
     }
     return newUsersId;
+  }
+  async registrationEmailResending(email): Promise<boolean> {
+    const refreshConfirmationData = {
+      email: email,
+      confirmationCode: uuidv4(),
+      expirationDate: add(new Date(), {
+        hours: 1,
+        //minutes: 3
+      }),
+    };
+    try {
+      await this.emailManager.resendEmailConfirmationMessage(
+        refreshConfirmationData,
+      );
+    } catch (error) {
+      throw new CustomisableException(
+        'email',
+        'the application failed to send an email',
+        400,
+      );
+    }
+    // const result = await this.usersRepository.refreshConfirmationCode(
+    //   refreshConfirmationData,
+    // );
+    // return result;
+    const user = await this.usersRepository.findUserByLoginOrEmail(email);
+    user.confirmationCode = uuidv4();
+    user.expirationDateOfConfirmationCode = add(new Date(), {
+      hours: 1,
+      //minutes: 3
+    });
+    return await this.usersRepository.saveUser(user);
   }
 }
