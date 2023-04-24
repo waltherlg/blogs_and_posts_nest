@@ -8,7 +8,7 @@ import { PasswordRecoveryModel } from '../authorization/auth.types';
 export class UsersRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async saveUser(user: UserDocument) {
+  async saveUser(user: UserDocument): Promise<boolean> {
     const result = await user.save();
     return !!result;
   }

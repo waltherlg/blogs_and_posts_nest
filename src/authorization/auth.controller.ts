@@ -43,8 +43,10 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(
-    @Body() email: registrationEmailResendingInput,
+    @Body() email: RegistrationEmailResendingInput,
   ) {
+    // вариант где существование эмейла и его подтверждение проверяется с помощью
+    // checkService и эксепшены выкидываются в контроллере
     if (!(await this.checkService.isEmailExist(email.email))) {
       throw new CustomisableException('email', 'email not exist', 400);
     }
@@ -63,11 +65,25 @@ export class AuthController {
       400,
     );
   }
+  @Post('registration-confirmation')
+  @HttpCode(204)
+  async registrationConfirmation(
+    @Body() Code: RegistrationConfirmationCodeInput,
+  ) {
+    // вариант где код будет проверятся в auth сервисе
+    return await this.authService.confirmEmail(Code.code);
+  }
 }
-export class registrationEmailResendingInput {
+export class RegistrationEmailResendingInput {
   @IsString()
   @IsEmail()
   @Length(1, 100)
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
+}
+
+export class RegistrationConfirmationCodeInput {
+  @IsString()
+  @Length(1, 100)
+  code: string;
 }

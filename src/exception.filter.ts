@@ -50,6 +50,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       //     },
       //   ],
       // });
+      // тело реквеста, как оно было
       // response.status(status).json({
       //   statusCode: status,
       //   timestamp: new Date().toISOString(),

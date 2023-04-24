@@ -2,6 +2,7 @@ import { UsersRepository } from '../users/users.repository';
 import {
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserInputModelType } from '../users/users.controller';
@@ -56,10 +57,6 @@ export class AuthService {
     const refreshConfirmationData = {
       email: email,
       confirmationCode: uuidv4(),
-      expirationDate: add(new Date(), {
-        hours: 1,
-        //minutes: 3
-      }),
     };
     try {
       await this.emailManager.resendEmailConfirmationMessage(
@@ -77,11 +74,25 @@ export class AuthService {
     // );
     // return result;
     const user = await this.usersRepository.findUserByLoginOrEmail(email);
-    user.confirmationCode = uuidv4();
+    user.confirmationCode = refreshConfirmationData.confirmationCode;
     user.expirationDateOfConfirmationCode = add(new Date(), {
       hours: 1,
       //minutes: 3
     });
+    return await this.usersRepository.saveUser(user);
+  }
+  async confirmEmail(code): Promise<boolean> {
+    const user = await this.usersRepository.getUserByConfirmationCode(code);
+    // если пользователь не найден, или уже подтвержден, то выкидываем эксепшен
+    if (!user || user.isConfirmed === true) {
+      throw new CustomisableException(
+        'code',
+        ' confirmation code is incorrect, expired or already been applied',
+        400,
+      );
+    }
+    user.isConfirmed = true;
+    user.expirationDateOfConfirmationCode = null;
     return await this.usersRepository.saveUser(user);
   }
 }

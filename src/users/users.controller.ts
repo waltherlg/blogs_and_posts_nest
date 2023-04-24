@@ -1,5 +1,5 @@
 import { UsersService } from './users.service';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { UsersQueryRepository } from './users.query.repository';
 import {
@@ -7,6 +7,7 @@ import {
   DEFAULT_USERS_QUERY_PARAMS,
   RequestUsersQueryModel,
 } from '../models/types';
+import { BasicAuthGuard } from '../guards/auth.guards';
 export class CreateUserInputModelType {
   @IsString()
   @Length(3, 10)
@@ -27,6 +28,7 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(@Body() userCreateInputModel: CreateUserInputModelType) {
     const newUsersId = await this.usersService.createUser(userCreateInputModel);

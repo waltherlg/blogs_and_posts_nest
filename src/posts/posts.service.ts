@@ -17,7 +17,7 @@ export class PostsService {
       postCreateInputModel.blogId,
     );
     if (!blog) {
-      throw new NotFoundException();
+      throw new NotFoundException({ message: 'blog not found', field: 'blog' });
     }
     const postDTO = new PostDBType(
       new Types.ObjectId(),
