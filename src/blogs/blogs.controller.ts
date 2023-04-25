@@ -134,13 +134,19 @@ export class BlogsController {
     @Param('id') blogId: string,
     @Query() queryParams: RequestQueryParamsModel,
   ) {
-    if (!(await this.checkService.isBlogExist(blogId))) {
-      throw new BlogNotFoundException();
-    }
+    // if (!(await this.checkService.isBlogExist(blogId))) {
+    //   throw new BlogNotFoundException();
+    // }
+    await this.isBlogExist(blogId);
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
     return await this.postsQueryRepository.getAllPostsByBlogsId(
       mergedQueryParams,
       blogId,
     );
+  }
+  async isBlogExist(blogId) {
+    if (!(await this.checkService.isBlogExist(blogId))) {
+      throw new BlogNotFoundException();
+    }
   }
 }
