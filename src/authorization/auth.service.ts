@@ -11,12 +11,14 @@ import { EmailManager } from '../managers/email-manager';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
 import { CustomisableException } from '../exceptions/custom.exceptions';
+import { BcryptService } from '../other.services/bcrypt.service';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly dtoFactory: DTOFactory,
     private readonly emailManager: EmailManager,
+    private readonly bcryptService: BcryptService,
   ) {}
   async BasicAuthorization(authHeader): Promise<boolean> {
     const authType = authHeader.split(' ')[0];
@@ -32,6 +34,27 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     return true;
+  }
+
+  async checkUserCredential(
+    loginOrEmail: string,
+    password: string,
+  ): Promise<string | null> {
+    const user = await this.usersRepository.findUserByLoginOrEmail(
+      loginOrEmail,
+    );
+    if (!user) {
+      return null;
+    }
+    const userHash = user.passwordHash;
+    const isPasswordValid = this.bcryptService.comparePassword(
+      password,
+      userHash,
+    );
+    if (!isPasswordValid) {
+      return null;
+    }
+    return user._id.toString();
   }
 
   async registerUser(registerUserInputData: CreateUserInputModelType) {

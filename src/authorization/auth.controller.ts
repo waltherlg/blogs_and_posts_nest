@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Injectable,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserInputModelType } from '../users/users.controller';
 import { UsersQueryRepository } from '../users/users.query.repository';
@@ -18,6 +19,8 @@ import {
   LoginAlreadyExistException,
 } from '../exceptions/custom.exceptions';
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { UserAuthModel } from './auth.types';
 export class RegistrationEmailResendingInput {
   @IsString()
   @IsEmail()
@@ -86,5 +89,12 @@ export class AuthController {
   ) {
     // вариант где код будет проверятся в auth сервисе
     return await this.authService.confirmEmail(Code.code);
+  }
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(LoginData: UserAuthModel) {
+    return 'login';
+    //const {accessToken, refreshToken} = await this.authService.login(userId, req.ip, req.headers['user-agent']!)
+    //res.status(200).cookie("refreshToken", refreshToken, {httpOnly: true, secure: true}).send({accessToken})
   }
 }
