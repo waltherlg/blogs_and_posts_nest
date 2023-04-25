@@ -18,4 +18,7 @@ export class UsersService {
     const newUsersId = await this.usersRepository.createUser(userDTO);
     return newUsersId;
   }
+  async deleteUserById(userId: string): Promise<boolean> {
+    return await this.usersRepository.deleteUserById(userId);
+  }
 }

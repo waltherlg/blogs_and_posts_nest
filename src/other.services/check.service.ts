@@ -19,6 +19,11 @@ export class CheckService {
     return !!post;
   }
 
+  async isUserExist(userId): Promise<boolean> {
+    const user = await this.usersRepository.getUserDBTypeById(userId);
+    return !!user;
+  }
+
   async isConfirmationCodeExist(code: string): Promise<boolean> {
     const user = await this.usersRepository.getUserByConfirmationCode(code);
     return !!user;

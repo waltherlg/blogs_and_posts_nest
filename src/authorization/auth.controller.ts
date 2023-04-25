@@ -18,6 +18,20 @@ import {
   LoginAlreadyExistException,
 } from '../exceptions/custom.exceptions';
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
+export class RegistrationEmailResendingInput {
+  @IsString()
+  @IsEmail()
+  @Length(1, 100)
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  email: string;
+}
+
+export class RegistrationConfirmationCodeInput {
+  @IsString()
+  @Length(1, 100)
+  code: string;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -73,17 +87,4 @@ export class AuthController {
     // вариант где код будет проверятся в auth сервисе
     return await this.authService.confirmEmail(Code.code);
   }
-}
-export class RegistrationEmailResendingInput {
-  @IsString()
-  @IsEmail()
-  @Length(1, 100)
-  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  email: string;
-}
-
-export class RegistrationConfirmationCodeInput {
-  @IsString()
-  @Length(1, 100)
-  code: string;
 }

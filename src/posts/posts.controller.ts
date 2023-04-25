@@ -19,6 +19,7 @@ import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
 import { PostsQueryRepository } from './posts.query.repository';
 import { BasicAuthGuard } from '../guards/auth.guards';
+import { PostNotFoundException } from '../exceptions/custom.exceptions';
 
 export class CreatePostInputModelType {
   @IsString()
@@ -69,9 +70,7 @@ export class PostController {
   async getPostById(@Param('id') postId: string) {
     const post = await this.postsQueryRepository.getPostById(postId);
     if (!post) {
-      throw new NotFoundException([
-        { message: 'post not found', field: 'post' },
-      ]);
+      throw new PostNotFoundException();
     }
     return post;
   }
@@ -82,17 +81,17 @@ export class PostController {
     @Param('id') postId: string,
     @Body() postUpdateInputModel: UpdatePostInputModelType,
   ) {
+    if (!(await this.checkService.isPostExist(postId))) {
+      throw new PostNotFoundException();
+    }
     return await this.postsService.updatePostById(postId, postUpdateInputModel);
   }
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deletePostById(@Param('id') postId: string) {
-    const isPostExist = this.checkService.isPostExist(postId);
-    if (!isPostExist) {
-      throw new NotFoundException([
-        { message: 'post not found', field: 'post' },
-      ]);
+    if (!(await this.checkService.isPostExist(postId))) {
+      throw new PostNotFoundException();
     }
     return await this.postsService.deletePostById(postId);
   }

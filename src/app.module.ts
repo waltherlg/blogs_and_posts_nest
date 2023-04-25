@@ -28,7 +28,6 @@ import { DTOFactory } from './helpers/DTO.factory';
 import { AuthController } from './authorization/auth.controller';
 import { EmailManager } from './managers/email-manager';
 import { EmailAdapter } from './adapters/email-adapter';
-import { MailerService } from '@nestjs-modules/mailer/dist/mailer.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;

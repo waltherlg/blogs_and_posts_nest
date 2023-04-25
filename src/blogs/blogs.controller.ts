@@ -26,6 +26,10 @@ import { CheckService } from '../other.services/check.service';
 import { PostsService } from '../posts/posts.service';
 import { PostsQueryRepository } from '../posts/posts.query.repository';
 import { BasicAuthGuard } from '../guards/auth.guards';
+import {
+  BlogNotFoundException,
+  CustomisableException,
+} from '../exceptions/custom.exceptions';
 
 export class CreateBlogInputModelType {
   @IsString()
@@ -90,25 +94,20 @@ export class BlogsController {
     @Param('id') blogsId: string,
     @Body() blogUpdateInputModel: UpdateBlogInputModelType,
   ) {
-    const result = await this.blogsService.updateBlogById(
+    // check is blog exist in blogService
+    return await this.blogsService.updateBlogById(
       blogsId,
       blogUpdateInputModel,
     );
-    if (result) {
-      return null;
-    } else {
-      throw new Error('blog not updated');
-    }
   }
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deleteBlogById(@Param('id') blogId: string) {
-    const isBlogExist = this.checkService.isBlogExist(blogId);
+    const isBlogExist = await this.checkService.isBlogExist(blogId);
+    console.log(isBlogExist);
     if (!isBlogExist) {
-      throw new NotFoundException([
-        { message: 'blog not found', field: 'blog' },
-      ]);
+      throw new BlogNotFoundException();
     }
     return await this.blogsService.deleteBlogById(blogId);
   }
@@ -125,6 +124,7 @@ export class BlogsController {
     @Body() inputPostCreateModel: CreatePostByBlogsIdInputModelType,
   ) {
     const postCreateModel = { ...inputPostCreateModel, blogId: blogId };
+    //check is blog exist in post service
     const createdPostId = await this.postsService.createPost(postCreateModel);
     return await this.postsQueryRepository.getPostById(createdPostId);
   }
@@ -134,6 +134,9 @@ export class BlogsController {
     @Param('id') blogId: string,
     @Query() queryParams: RequestQueryParamsModel,
   ) {
+    if (!(await this.checkService.isBlogExist(blogId))) {
+      throw new BlogNotFoundException();
+    }
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
     return await this.postsQueryRepository.getAllPostsByBlogsId(
       mergedQueryParams,

@@ -1,5 +1,15 @@
 import { UsersService } from './users.service';
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { UsersQueryRepository } from './users.query.repository';
 import {
@@ -8,6 +18,8 @@ import {
   RequestUsersQueryModel,
 } from '../models/types';
 import { BasicAuthGuard } from '../guards/auth.guards';
+import { CheckService } from '../other.services/check.service';
+import { UserNotFoundException } from '../exceptions/custom.exceptions';
 export class CreateUserInputModelType {
   @IsString()
   @Length(3, 10)
@@ -27,6 +39,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly checkService: CheckService,
   ) {}
   @UseGuards(BasicAuthGuard)
   @Post()
@@ -40,5 +53,13 @@ export class UsersController {
   async getAllUsers(@Query() queryParams: RequestUsersQueryModel) {
     const mergedQueryParams = { ...DEFAULT_USERS_QUERY_PARAMS, ...queryParams };
     return await this.usersQueryRepository.getAllUsers(mergedQueryParams);
+  }
+  @Delete(':id')
+  @HttpCode(204)
+  async deleteUserById(@Param('id') userId: string) {
+    if (!(await this.checkService.isUserExist(userId))) {
+      throw new UserNotFoundException();
+    }
+    return await this.usersService.deleteUserById(userId);
   }
 }

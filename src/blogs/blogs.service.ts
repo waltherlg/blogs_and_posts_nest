@@ -8,6 +8,7 @@ import {
   UpdateBlogInputModelType,
 } from './blogs.controller';
 import { validateOrReject } from 'class-validator';
+import { BlogNotFoundException } from '../exceptions/custom.exceptions';
 
 const validateOrRejectModel = async (model: any, ctor: { new (): any }) => {
   if (model instanceof ctor === false) {
@@ -45,7 +46,7 @@ export class BlogsService {
   ): Promise<boolean> {
     const blog = await this.blogsRepository.getBlogDBTypeById(blogsId);
     if (!blog) {
-      return false;
+      throw new BlogNotFoundException();
     }
     blog.name = blogUpdateInputModel.name;
     blog.description = blogUpdateInputModel.description;

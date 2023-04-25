@@ -4,6 +4,7 @@ import { Types } from 'mongoose';
 import { CreatePostInputModelType } from './posts.controller';
 import { BlogsRepository } from '../blogs/blogs.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { BlogNotFoundException } from '../exceptions/custom.exceptions';
 @Injectable()
 export class PostsService {
   constructor(
@@ -17,7 +18,7 @@ export class PostsService {
       postCreateInputModel.blogId,
     );
     if (!blog) {
-      throw new NotFoundException({ message: 'blog not found', field: 'blog' });
+      throw new BlogNotFoundException();
     }
     const postDTO = new PostDBType(
       new Types.ObjectId(),
