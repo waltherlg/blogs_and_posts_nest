@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Injectable,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserInputModelType } from '../users/users.controller';
@@ -92,7 +93,7 @@ export class AuthController {
   }
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(LoginData: UserAuthModel) {
+  async login(@Req() request) {
     return 'login';
     //const {accessToken, refreshToken} = await this.authService.login(userId, req.ip, req.headers['user-agent']!)
     //res.status(200).cookie("refreshToken", refreshToken, {httpOnly: true, secure: true}).send({accessToken})
