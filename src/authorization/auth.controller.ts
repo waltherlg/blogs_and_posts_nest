@@ -94,7 +94,12 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() request) {
-    return 'login';
+    const result = {
+      userId: request.userId,
+      ip: request.ip,
+      agent: request.headers['user-agent'],
+    };
+    return result;
     //const {accessToken, refreshToken} = await this.authService.login(userId, req.ip, req.headers['user-agent']!)
     //res.status(200).cookie("refreshToken", refreshToken, {httpOnly: true, secure: true}).send({accessToken})
   }

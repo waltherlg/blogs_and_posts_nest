@@ -30,7 +30,9 @@ import { EmailManager } from './managers/email-manager';
 import { EmailAdapter } from './adapters/email-adapter';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './authorization/strategies/local.strategy';
+import { settings } from './settings';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -41,6 +43,10 @@ if (!emailUser || !emailPassword) {
 @Module({
   imports: [
     PassportModule,
+    JwtModule.register({
+      secret: settings.JWT_SECRET,
+      signOptions: { expiresIn: '60m' },
+    }),
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',
