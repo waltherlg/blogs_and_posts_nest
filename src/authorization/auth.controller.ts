@@ -9,6 +9,7 @@ import {
   Injectable,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserInputModelType } from '../users/users.controller';
@@ -93,14 +94,17 @@ export class AuthController {
   }
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() request) {
-    const result = {
-      userId: request.userId,
-      ip: request.ip,
-      agent: request.headers['user-agent'],
-    };
-    return result;
+  async login(@Req() request, @Res({ passthrough: true }) response) {
+    // const result = {
+    //   userId: request.user,
+    //   ip: request.ip,
+    //   agent: request.headers['user-agent'],
+    // };
+    // return result;
     //const {accessToken, refreshToken} = await this.authService.login(userId, req.ip, req.headers['user-agent']!)
-    //res.status(200).cookie("refreshToken", refreshToken, {httpOnly: true, secure: true}).send({accessToken})
+    // response
+    //   .status(200)
+    //   .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+    //   .send({ accessToken });
   }
 }

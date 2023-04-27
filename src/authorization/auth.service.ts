@@ -72,7 +72,7 @@ export class AuthService {
       await this.emailManager.sendEmailConfirmationMessage(userDTO);
     } catch (error) {
       await this.usersRepository.deleteUserById(newUsersId);
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(); //в контроллер
     }
     return newUsersId;
   }

@@ -46,7 +46,7 @@ export class BlogsService {
   ): Promise<boolean> {
     const blog = await this.blogsRepository.getBlogDBTypeById(blogsId);
     if (!blog) {
-      throw new BlogNotFoundException();
+      throw new BlogNotFoundException(); // в контроллер
     }
     blog.name = blogUpdateInputModel.name;
     blog.description = blogUpdateInputModel.description;

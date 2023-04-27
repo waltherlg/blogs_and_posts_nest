@@ -103,7 +103,6 @@ export class BlogsController {
   @HttpCode(204)
   async deleteBlogById(@Param('id') blogId: string) {
     const isBlogExist = await this.checkService.isBlogExist(blogId);
-    console.log(isBlogExist);
     if (!isBlogExist) {
       throw new BlogNotFoundException();
     }
