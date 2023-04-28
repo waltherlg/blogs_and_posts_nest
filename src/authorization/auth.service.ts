@@ -118,4 +118,26 @@ export class AuthService {
     user.expirationDateOfConfirmationCode = null;
     return await this.usersRepository.saveUser(user);
   }
+
+  async login(userId: ObjectId, ip: string, userAgent: string) {
+    const deviceId = new ObjectId();
+    const accessToken = jwtService.createJWT(userId);
+    const refreshToken = await jwtService.createJWTRefresh(userId, deviceId);
+    const lastActiveDate = await jwtService.getLastActiveDateFromRefreshToken(
+      refreshToken,
+    );
+    const expirationDate = await jwtService.getExpirationDateFromRefreshToken(
+      refreshToken,
+    );
+    const deviceInfo: UserDeviceDBType = {
+      _id: deviceId,
+      userId: userId,
+      ip,
+      title: userAgent,
+      lastActiveDate,
+      expirationDate,
+    };
+    await userDeviceRepo.addDeviceInfo(deviceInfo);
+    return { accessToken, refreshToken };
+  }
 }
