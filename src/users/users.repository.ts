@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './users.types';
-import { PasswordRecoveryModel } from '../authorization/auth.types';
+import { PasswordRecoveryModel } from '../auth/auth.types';
 
 @Injectable()
 export class UsersRepository {

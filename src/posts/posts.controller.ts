@@ -18,8 +18,9 @@ import { CheckService } from '../other.services/check.service';
 import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
 import { PostsQueryRepository } from './posts.query.repository';
-import { BasicAuthGuard } from '../guards/auth.guards';
+
 import { PostNotFoundException } from '../exceptions/custom.exceptions';
+import { BasicAuthGuard } from '../auth/guards/auth.guards';
 
 export class CreatePostInputModelType {
   @IsString()

@@ -25,11 +25,12 @@ import { Length, IsString, IsUrl } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
 import { PostsService } from '../posts/posts.service';
 import { PostsQueryRepository } from '../posts/posts.query.repository';
-import { BasicAuthGuard } from '../guards/auth.guards';
+
 import {
   BlogNotFoundException,
   CustomisableException,
 } from '../exceptions/custom.exceptions';
+import { BasicAuthGuard } from '../auth/guards/auth.guards';
 
 export class CreateBlogInputModelType {
   @IsString()

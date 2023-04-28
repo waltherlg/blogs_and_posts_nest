@@ -100,9 +100,9 @@ export class AuthController {
       request.ip,
       request.headers['user-agent']!,
     );
-    // response
-    //   .status(200)
-    //   .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
-    //   .send({ accessToken });
+    response
+      .status(200)
+      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .send({ accessToken });
   }
 }

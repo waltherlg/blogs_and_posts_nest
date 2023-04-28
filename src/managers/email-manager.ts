@@ -1,7 +1,7 @@
 import { EmailAdapter } from '../adapters/email-adapter';
 
 import { Injectable } from '@nestjs/common';
-import { PasswordRecoveryModel } from '../authorization/auth.types';
+import { PasswordRecoveryModel } from '../auth/auth.types';
 @Injectable()
 export class EmailManager {
   constructor(private readonly emailAdapter: EmailAdapter) {}

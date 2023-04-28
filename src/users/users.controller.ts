@@ -17,9 +17,10 @@ import {
   DEFAULT_USERS_QUERY_PARAMS,
   RequestUsersQueryModel,
 } from '../models/types';
-import { BasicAuthGuard } from '../guards/auth.guards';
+
 import { CheckService } from '../other.services/check.service';
 import { UserNotFoundException } from '../exceptions/custom.exceptions';
+import { BasicAuthGuard } from '../auth/guards/auth.guards';
 export class CreateUserInputModelType {
   @IsString()
   @Length(3, 10)
