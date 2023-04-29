@@ -38,6 +38,7 @@ import {
   UsersDevice,
   UsersDeviceSchema,
 } from './usersDevices/users-devices.types';
+import { JwtStrategy } from './auth/strategies/jwt.strategy';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -111,6 +112,7 @@ if (!emailUser || !emailPassword) {
     UsersQueryRepository,
     UsersDevicesRepository,
     LocalStrategy,
+    JwtStrategy,
   ],
   exports: [AuthService],
 })

@@ -127,6 +127,10 @@ export class AuthService {
     return await this.usersRepository.saveUser(user);
   }
 
+  async validateUserByAccessToken(payload) {
+    return this.getUserIdFromToken(payload);
+  }
+
   async login(userId: string, ip: string, userAgent: string) {
     const deviceId = new Types.ObjectId();
     const accessToken = await this.jwtService.signAsync({ userId: userId });
@@ -150,7 +154,7 @@ export class AuthService {
     await this.usersDeviceRepository.addDeviceInfo(deviceInfoDTO);
     return { accessToken, refreshToken };
   }
-  getUserIdFromRefreshToken(token: string) {
+  getUserIdFromToken(token: string) {
     try {
       const result: any = this.jwtService.verify(token);
       return result.userId;
@@ -159,7 +163,7 @@ export class AuthService {
     }
   }
 
-  getDeviceIdFromRefreshToken(token: string) {
+  getDeviceIdFromToken(token: string) {
     try {
       const result: any = this.jwtService.verify(token);
       return result.deviceId;

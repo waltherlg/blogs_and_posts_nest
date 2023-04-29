@@ -31,6 +31,7 @@ import {
   CustomisableException,
 } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 export class CreateBlogInputModelType {
   @IsString()
@@ -77,7 +78,7 @@ export class BlogsController {
     const newBlogsId = await this.blogsService.createBlog(blogCreateInputModel);
     return await this.blogsQueryRepository.getBlogById(newBlogsId);
   }
-
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getBlogById(@Param('id') blogsId: string) {
     const blog = await this.blogsQueryRepository.getBlogById(blogsId);
