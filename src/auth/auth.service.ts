@@ -137,9 +137,7 @@ export class AuthService {
     const refreshTokenPayload = { userId, deviceId };
     const refreshToken = await this.jwtService.signAsync(refreshTokenPayload);
 
-    const lastActiveDate = await this.getLastActiveDateFromRefreshToken(
-      refreshToken,
-    );
+    const lastActiveDate = await this.getLastActiveDateFromToken(refreshToken);
     const expirationDate = await this.getExpirationDateFromRefreshToken(
       refreshToken,
     );
@@ -172,9 +170,7 @@ export class AuthService {
     }
   }
 
-  async getLastActiveDateFromRefreshToken(
-    refreshToken: string,
-  ): Promise<string> {
+  async getLastActiveDateFromToken(refreshToken: string): Promise<string> {
     const payload: any = this.jwtService.decode(refreshToken);
     return new Date(payload.iat * 1000).toISOString();
   }
