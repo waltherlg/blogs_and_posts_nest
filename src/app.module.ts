@@ -39,8 +39,7 @@ import {
   UsersDeviceSchema,
 } from './usersDevices/users-devices.types';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
-import { RefreshTokenStrategy } from './auth/strategies/refreshtoken.strategy';
-import { SecurityController } from './usersDevices/security.controller';
+import { RefreshTokenStrategy } from './auth/strategies/refreshToken.strategy';
 import { UsersDeviceService } from './usersDevices/users-devices.service';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
@@ -93,7 +92,6 @@ if (!emailUser || !emailPassword) {
     PostController,
     UsersController,
     AuthController,
-    SecurityController,
     TestingController,
   ],
   providers: [

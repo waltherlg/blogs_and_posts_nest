@@ -23,7 +23,7 @@ import {
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UserAuthModel } from './auth.types';
-import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { RefreshTokenGuard } from './guards/refreshToken.guard';
 export class RegistrationEmailResendingInput {
   @IsString()
   @IsEmail()

@@ -136,6 +136,7 @@ export class AuthService {
     const accessToken = await this.jwtService.signAsync({ userId: userId });
     const refreshTokenPayload = { userId, deviceId };
     const refreshToken = await this.jwtService.signAsync(refreshTokenPayload);
+    console.log(refreshToken);
 
     const lastActiveDate = await this.getLastActiveDateFromToken(refreshToken);
     const expirationDate = await this.getExpirationDateFromRefreshToken(
