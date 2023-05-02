@@ -1,12 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ExtractJwt } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { settings } from '../../settings';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class RefreshTokenStrategy extends PassportStrategy(Strategy) {
+export class RefreshTokenStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh-token',
+) {
   constructor(private readonly authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -18,6 +22,9 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(request: Request, payload: any) {
+    if (!request.cookies || !request.cookies.refreshToken) {
+      throw new UnauthorizedException('no cookie');
+    }
     const refreshToken = request.cookies.refreshToken;
     if (!refreshToken) {
       throw new UnauthorizedException('no cookie');

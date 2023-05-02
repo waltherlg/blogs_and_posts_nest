@@ -23,6 +23,7 @@ import {
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UserAuthModel } from './auth.types';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 export class RegistrationEmailResendingInput {
   @IsString()
   @IsEmail()
@@ -104,5 +105,10 @@ export class AuthController {
       .status(200)
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
       .send({ accessToken });
+  }
+  @UseGuards(RefreshTokenGuard)
+  @Post('refresh-token')
+  async refreshToken(@Req() request) {
+    return { userId: request.user.userId, deviceId: request.user.deviceId };
   }
 }
