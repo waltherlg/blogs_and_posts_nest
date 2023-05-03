@@ -29,7 +29,6 @@ export class RefreshTokenStrategy extends PassportStrategy(
   }
 
   async validate(request: Request, payload: any) {
-    console.log('1');
     if (!request.cookies || !request.cookies.refreshToken) {
       throw new CustomisableException('no access', 'no cookie', 401);
       //throw new UnauthorizedException('no cookie');
@@ -78,7 +77,6 @@ export class RefreshTokenStrategy extends PassportStrategy(
       );
       //throw new UnauthorizedException('the last active dates do not match');
     }
-
-    return { userId, deviceId };
+    return userId;
   }
 }

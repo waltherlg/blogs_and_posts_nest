@@ -13,6 +13,7 @@ export class SecurityController {
   @UseGuards(RefreshTokenGuard)
   @Get('devices')
   async devices(@Req() request) {
+    console.log(request.userId);
     const usersDevises = await this.usersDeviceService.getActiveUserDevices(
       request.userId!,
     );

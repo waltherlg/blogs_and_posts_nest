@@ -13,8 +13,9 @@ export class UsersDeviceService {
     return currentDevice;
   }
   async getActiveUserDevices(userId: string) {
-    const foundDevices =
-      this.usersDeviceRepository.getActiveUserDevices(userId);
+    const foundDevices = await this.usersDeviceRepository.getActiveUserDevices(
+      userId,
+    );
     return foundDevices;
   }
 }
