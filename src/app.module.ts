@@ -41,6 +41,7 @@ import {
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { RefreshTokenStrategy } from './auth/strategies/refreshToken.strategy';
 import { UsersDeviceService } from './usersDevices/users-devices.service';
+import { SecurityController } from './usersDevices/security.controller';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -93,6 +94,7 @@ if (!emailUser || !emailPassword) {
     UsersController,
     AuthController,
     TestingController,
+    SecurityController,
   ],
   providers: [
     AppService,

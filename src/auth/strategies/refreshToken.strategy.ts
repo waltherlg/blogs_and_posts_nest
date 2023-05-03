@@ -49,13 +49,13 @@ export class RefreshTokenStrategy extends PassportStrategy(
     const deviceId = await this.authService.getDeviceIdFromToken(refreshToken);
     if (!deviceId) {
       throw new CustomisableException('no access', 'no device in cookies', 401);
-      throw new UnauthorizedException('no device in cookies');
+      //throw new UnauthorizedException('no device in cookies');
     }
 
     const isUserExist = await this.checkService.isUserExist(userId);
     if (!isUserExist) {
       throw new CustomisableException('no access', 'user not found', 401);
-      throw new UnauthorizedException('user not found');
+      //throw new UnauthorizedException('user not found');
     }
     console.log('userId ', userId, ' deviceId', deviceId);
 
@@ -65,7 +65,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     );
     if (!currentDevise) {
       throw new CustomisableException('no access', 'device not found', 401);
-      throw new UnauthorizedException('device not found');
+      //throw new UnauthorizedException('device not found');
     }
 
     const lastActiveRefreshToken =
@@ -76,7 +76,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
         'the last active dates do not match',
         401,
       );
-      throw new UnauthorizedException('the last active dates do not match');
+      //throw new UnauthorizedException('the last active dates do not match');
     }
 
     return { userId, deviceId };

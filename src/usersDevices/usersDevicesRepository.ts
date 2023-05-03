@@ -28,4 +28,16 @@ export class UsersDevicesRepository {
     }
     return device;
   }
+
+  async getActiveUserDevices(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      return null;
+    }
+    const activeUserDevices = await this.usersDeviseModel.find({
+      userId: userId,
+    });
+    return activeUserDevices.map((device: UsersDeviceDocument) => {
+      return device.prepareUsersDeviceForOutput();
+    });
+  }
 }
