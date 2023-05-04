@@ -101,10 +101,11 @@ export class PostController {
   @UseGuards(OptionalJwtAuthGuard)
   @Get()
   async getAllPosts(
-    @Req() request: Request & { user? },
+    @Req() request,
     @Query() queryParams: RequestQueryParamsModel,
   ) {
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
+    console.log('request.user ', request.user);
     return await this.postsQueryRepository.getAllPosts(
       mergedQueryParams,
       request.user,

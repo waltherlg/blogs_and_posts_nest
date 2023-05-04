@@ -109,7 +109,7 @@ export class BlogsController {
     }
     return await this.blogsService.deleteBlogById(blogId);
   }
-
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllBlogs(@Query() queryParams: RequestBlogsQueryModel) {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };

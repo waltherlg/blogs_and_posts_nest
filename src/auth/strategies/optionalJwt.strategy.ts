@@ -16,13 +16,11 @@ export class OptionalJwtStrategy extends PassportStrategy(
     });
   }
   async validate(payload: any) {
+    console.log('payload ', payload);
     const userId = await this.authService.validateUserByAccessToken(payload);
     if (!userId) {
       return null;
     }
     return userId;
-  }
-  authenticate() {
-    return this.success({});
   }
 }

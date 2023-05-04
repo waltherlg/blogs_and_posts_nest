@@ -128,7 +128,7 @@ export class AuthService {
   }
 
   async validateUserByAccessToken(payload) {
-    return this.getUserIdFromToken(payload);
+    return await this.getUserIdFromToken(payload);
   }
 
   async login(userId: string, ip: string, userAgent: string) {
@@ -153,16 +153,17 @@ export class AuthService {
     await this.usersDeviceRepository.addDeviceInfo(deviceInfoDTO);
     return { accessToken, refreshToken };
   }
-  getUserIdFromToken(token: string) {
+  getUserIdFromToken(token) {
     try {
       const result: any = this.jwtService.verify(token);
+      console.log('getUserIdFromToken result', result);
       return result.userId;
     } catch (error) {
       return null;
     }
   }
 
-  getDeviceIdFromToken(token: string) {
+  getDeviceIdFromToken(token) {
     try {
       const result: any = this.jwtService.verify(token);
       return result.deviceId;
@@ -171,14 +172,12 @@ export class AuthService {
     }
   }
 
-  async getLastActiveDateFromToken(refreshToken: string): Promise<string> {
+  async getLastActiveDateFromToken(refreshToken): Promise<string> {
     const payload: any = this.jwtService.decode(refreshToken);
     return new Date(payload.iat * 1000).toISOString();
   }
 
-  async getExpirationDateFromRefreshToken(
-    refreshToken: string,
-  ): Promise<string> {
+  async getExpirationDateFromRefreshToken(refreshToken): Promise<string> {
     const payload: any = this.jwtService.decode(refreshToken);
     return new Date(payload.exp * 1000).toISOString();
   }
