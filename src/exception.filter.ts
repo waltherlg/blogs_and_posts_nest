@@ -45,9 +45,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         response.status(status).json({ errors });
       }
     } else {
-      const errors: any = exception.getResponse();
-      console.log(errors);
-      response.status(status).json({ errors });
+      const errorsMessages: any = exception.getResponse();
+      console.log(errorsMessages);
+      response.status(status).json({ errorsMessages });
       // const match = responseBody.match(/^\w+/);
       // const field = match ? match[0] : 'unknown';
       // response.status(status).json({
