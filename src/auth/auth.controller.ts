@@ -47,6 +47,7 @@ export class AuthController {
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
   @Post('registration')
+  @HttpCode(204)
   async registration(@Body() userCreateInputModel: CreateUserInputModelType) {
     if (await this.checkService.isEmailExist(userCreateInputModel.email)) {
       throw new EmailAlreadyExistException();
