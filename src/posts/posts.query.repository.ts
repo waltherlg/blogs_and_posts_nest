@@ -8,7 +8,7 @@ import { PostDocument, PostTypeOutput, Post } from './posts.types';
 export class PostsQueryRepository {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
-  async getPostById(postId): Promise<PostTypeOutput | null> {
+  async getPostById(postId, userId?): Promise<PostTypeOutput | null> {
     if (!Types.ObjectId.isValid(postId)) {
       return null;
     }
@@ -16,10 +16,16 @@ export class PostsQueryRepository {
     if (!post) {
       return null;
     }
+    const userPostStatus = post.likesCollection.find(
+      (p) => p.userId === userId,
+    );
+    if (userPostStatus) {
+      post.myStatus = userPostStatus.status;
+    }
     return post.preparePostForOutput();
   }
 
-  async getAllPosts(mergedQueryParams) {
+  async getAllPosts(mergedQueryParams, userId?) {
     const postCount = await this.postModel.countDocuments({});
     const posts = await this.postModel
       .find({})
@@ -34,6 +40,12 @@ export class PostsQueryRepository {
       });
 
     const postsOutput = posts.map((post: PostDocument) => {
+      const userPostStatus = post.likesCollection.find(
+        (p) => p.userId === userId,
+      );
+      if (userPostStatus) {
+        post.myStatus = userPostStatus.status;
+      }
       return post.preparePostForOutput();
     });
     const pageCount = Math.ceil(postCount / +mergedQueryParams.pageSize);
@@ -51,6 +63,7 @@ export class PostsQueryRepository {
   async getAllPostsByBlogsId(
     mergedQueryParams,
     blogId,
+    userId?,
   ): Promise<PaginationOutputModel<PostTypeOutput>> {
     const postCount = await this.postModel.countDocuments({ blogId: blogId });
     const posts = await this.postModel
@@ -66,6 +79,12 @@ export class PostsQueryRepository {
       });
 
     const postsOutput = posts.map((post: PostDocument) => {
+      const userPostStatus = post.likesCollection.find(
+        (p) => p.userId === userId,
+      );
+      if (userPostStatus) {
+        post.myStatus = userPostStatus.status;
+      }
       return post.preparePostForOutput();
     });
     const pageCount = Math.ceil(postCount / +mergedQueryParams.pageSize);

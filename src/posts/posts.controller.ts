@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AppService } from '../app.service';
@@ -21,6 +22,7 @@ import { PostsQueryRepository } from './posts.query.repository';
 
 import { PostNotFoundException } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 
 export class CreatePostInputModelType {
   @IsString()
@@ -66,7 +68,7 @@ export class PostController {
     const newPostId = await this.postsService.createPost(postCreateInputModel);
     return await this.postsQueryRepository.getPostById(newPostId);
   }
-
+  @UseGuards(OptionalJwtAuthGuard)
   @Get(':id')
   async getPostById(@Param('id') postId: string) {
     const post = await this.postsQueryRepository.getPostById(postId);
@@ -96,10 +98,16 @@ export class PostController {
     }
     return await this.postsService.deletePostById(postId);
   }
-
+  @UseGuards(OptionalJwtAuthGuard)
   @Get()
-  async getAllPosts(@Query() queryParams: RequestQueryParamsModel) {
+  async getAllPosts(
+    @Req() request: Request & { user? },
+    @Query() queryParams: RequestQueryParamsModel,
+  ) {
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
-    return await this.postsQueryRepository.getAllPosts(mergedQueryParams);
+    return await this.postsQueryRepository.getAllPosts(
+      mergedQueryParams,
+      request.user,
+    );
   }
 }
