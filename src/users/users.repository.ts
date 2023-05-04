@@ -41,11 +41,9 @@ export class UsersRepository {
     await this.userModel.deleteMany({});
   }
   async getUserByConfirmationCode(code: string): Promise<UserDocument | null> {
-    const user: UserDocument | null = await this.userModel
-      .findOne({
-        confirmationCode: code,
-      })
-      .lean();
+    const user: UserDocument | null = await this.userModel.findOne({
+      confirmationCode: code,
+    });
     if (!user) {
       return null;
     }
