@@ -55,7 +55,7 @@ export class AuthService {
       return null;
     }
     const userHash = user.passwordHash;
-    const isPasswordValid = this.bcryptService.comparePassword(
+    const isPasswordValid = await this.bcryptService.comparePassword(
       password,
       userHash,
     );
