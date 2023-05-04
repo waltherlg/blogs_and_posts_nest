@@ -25,19 +25,13 @@ export class UserNotFoundException extends HttpException {
 
 export class EmailAlreadyExistException extends HttpException {
   constructor() {
-    super(
-      messageConstructor('email', 'email already exist'),
-      HttpStatus.CONFLICT,
-    );
+    super(messageConstructor('email', 'email already exist'), 400);
   }
 }
 
 export class LoginAlreadyExistException extends HttpException {
   constructor() {
-    super(
-      messageConstructor('login', 'login already exist'),
-      HttpStatus.CONFLICT,
-    );
+    super(messageConstructor('login', 'login already exist'), 400);
   }
 }
 
