@@ -28,7 +28,7 @@ export class UsersDevicesRepository {
     }
     return device;
   }
-
+  '?';
   async getActiveUserDevices(userId: string) {
     if (!Types.ObjectId.isValid(userId)) {
       return null;
@@ -39,5 +39,8 @@ export class UsersDevicesRepository {
     return activeUserDevices.map((device: UsersDeviceDocument) => {
       return device.prepareUsersDeviceForOutput();
     });
+  }
+  async deleteAllUsersDevices() {
+    return await this.usersDeviseModel.deleteMany({});
   }
 }
