@@ -42,7 +42,6 @@ import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { RefreshTokenStrategy } from './auth/strategies/refreshToken.strategy';
 import { UsersDeviceService } from './usersDevices/users-devices.service';
 import { SecurityController } from './usersDevices/security.controller';
-import { OptionalJwtStrategy } from './auth/strategies/optionalJwt.strategy';
 import { AnonymousStrategy } from './auth/strategies/anonymus.strategy';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
@@ -121,7 +120,6 @@ if (!emailUser || !emailPassword) {
     LocalStrategy,
     JwtStrategy,
     RefreshTokenStrategy,
-    OptionalJwtStrategy,
     AnonymousStrategy,
   ],
   exports: [AuthService],

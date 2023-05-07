@@ -20,65 +20,78 @@ export class RefreshTokenStrategy extends PassportStrategy(
     private readonly usersDeviceService: UsersDeviceService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => request.cookies?.refreshToken,
-      ]),
-      secretOrKey: settings.JWT_SECRET,
+      ignoreExpiration: false,
       passReqToCallback: true,
+      secretOrKey: settings.JWT_SECRET,
+      jwtFromRequest: (req: Request) => {
+        console.log('req.cookies ', req.cookies);
+        if (req && req.cookies) {
+          return req.cookies['refreshToken'];
+        }
+        return null;
+      },
     });
   }
-
   async validate(request: Request, payload: any) {
-    if (!request.cookies || !request.cookies.refreshToken) {
-      throw new CustomisableException('no access', 'no cookie', 401);
-      //throw new UnauthorizedException('no cookie');
+    console.log(payload);
+    if (!payload) {
+      throw new UnauthorizedException();
     }
-    const refreshToken = request.cookies.refreshToken;
-    console.log('refreshToken ', refreshToken);
-    console.log('payload ', payload);
-    if (!refreshToken) {
-      throw new CustomisableException('no access', 'no cookie', 401);
-      //throw new UnauthorizedException('no cookie');
-    }
-
-    const userId = await this.authService.getUserIdFromToken(refreshToken);
-    if (!userId) {
-      throw new CustomisableException('no access', 'no user in cookies', 401);
-      //throw new UnauthorizedException('no user in cookies');
-    }
-
-    const deviceId = await this.authService.getDeviceIdFromToken(refreshToken);
-    if (!deviceId) {
-      throw new CustomisableException('no access', 'no device in cookies', 401);
-      //throw new UnauthorizedException('no device in cookies');
-    }
-
-    const isUserExist = await this.checkService.isUserExist(userId);
-    if (!isUserExist) {
-      throw new CustomisableException('no access', 'user not found', 401);
-      //throw new UnauthorizedException('user not found');
-    }
-    console.log('userId ', userId, ' deviceId', deviceId);
-
-    const currentDevise = await this.usersDeviceService.getCurrentDevise(
-      userId,
-      deviceId,
-    );
-    if (!currentDevise) {
-      throw new CustomisableException('no access', 'device not found', 401);
-      //throw new UnauthorizedException('device not found');
-    }
-
-    const lastActiveRefreshToken =
-      await this.authService.getLastActiveDateFromToken(refreshToken);
-    if (lastActiveRefreshToken !== currentDevise.lastActiveDate) {
-      throw new CustomisableException(
-        'no access',
-        'the last active dates do not match',
-        401,
-      );
-      //throw new UnauthorizedException('the last active dates do not match');
-    }
-    return userId;
+    return payload;
   }
+  //
+  // async validate(payload: any) {
+  //   console.log('payload ', payload);
+  //   // if (!request.cookies || !request.cookies.refreshToken) {
+  //   //   throw new CustomisableException('no access', 'no cookie', 401);
+  //   //   //throw new UnauthorizedException('no cookie');
+  //   // }
+  //   const refreshToken = payload;
+  //   console.log('refreshToken ', refreshToken);
+  //
+  //   if (!refreshToken) {
+  //     throw new CustomisableException('no access', 'no cookie', 401);
+  //     //throw new UnauthorizedException('no cookie');
+  //   }
+  //
+  //   const userId = await this.authService.getUserIdFromToken(refreshToken);
+  //   if (!userId) {
+  //     throw new CustomisableException('no access', 'no user in cookies', 401);
+  //     //throw new UnauthorizedException('no user in cookies');
+  //   }
+  //
+  //   const deviceId = await this.authService.getDeviceIdFromToken(refreshToken);
+  //   if (!deviceId) {
+  //     throw new CustomisableException('no access', 'no device in cookies', 401);
+  //     //throw new UnauthorizedException('no device in cookies');
+  //   }
+  //
+  //   const isUserExist = await this.checkService.isUserExist(userId);
+  //   if (!isUserExist) {
+  //     throw new CustomisableException('no access', 'user not found', 401);
+  //     //throw new UnauthorizedException('user not found');
+  //   }
+  //   console.log('userId ', userId, ' deviceId', deviceId);
+  //
+  //   const currentDevise = await this.usersDeviceService.getCurrentDevise(
+  //     userId,
+  //     deviceId,
+  //   );
+  //   if (!currentDevise) {
+  //     throw new CustomisableException('no access', 'device not found', 401);
+  //     //throw new UnauthorizedException('device not found');
+  //   }
+  //
+  //   const lastActiveRefreshToken =
+  //     await this.authService.getLastActiveDateFromToken(refreshToken);
+  //   if (lastActiveRefreshToken !== currentDevise.lastActiveDate) {
+  //     throw new CustomisableException(
+  //       'no access',
+  //       'the last active dates do not match',
+  //       401,
+  //     );
+  //     //throw new UnauthorizedException('the last active dates do not match');
+  //   }
+  //   return userId;
+  // }
 }
