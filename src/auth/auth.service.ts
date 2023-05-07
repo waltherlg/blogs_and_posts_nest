@@ -153,6 +153,29 @@ export class AuthService {
     await this.usersDeviceRepository.addDeviceInfo(deviceInfoDTO);
     return { accessToken, refreshToken };
   }
+
+  async refreshingToken(refreshToken: string) {
+    const deviceId = jwtService.getDeviceIdFromRefreshToken(refreshToken);
+    const userId = jwtService.getUserIdFromRefreshToken(refreshToken);
+    const accessToken = jwtService.createJWT(userId);
+    const newRefreshedToken = await jwtService.createJWTRefresh(
+      userId,
+      deviceId,
+    );
+    const lastActiveDate = await jwtService.getLastActiveDateFromRefreshToken(
+      newRefreshedToken,
+    );
+    const expirationDate = await jwtService.getExpirationDateFromRefreshToken(
+      newRefreshedToken,
+    );
+    await userDeviceRepo.refreshDeviceInfo(
+      deviceId,
+      lastActiveDate,
+      expirationDate,
+    );
+    return { accessToken, newRefreshedToken };
+  }
+
   getUserIdFromToken(token) {
     try {
       const result: any = this.jwtService.verify(token);

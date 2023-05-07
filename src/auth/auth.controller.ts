@@ -110,6 +110,6 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   async refreshToken(@Req() request) {
-    return { userId: request.user.userId, deviceId: request.user.deviceId };
+    return request.user;
   }
 }

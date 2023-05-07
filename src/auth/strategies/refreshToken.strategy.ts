@@ -34,6 +34,8 @@ export class RefreshTokenStrategy extends PassportStrategy(
       //throw new UnauthorizedException('no cookie');
     }
     const refreshToken = request.cookies.refreshToken;
+    console.log('refreshToken ', refreshToken);
+    console.log('payload ', payload);
     if (!refreshToken) {
       throw new CustomisableException('no access', 'no cookie', 401);
       //throw new UnauthorizedException('no cookie');
