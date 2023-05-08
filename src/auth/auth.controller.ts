@@ -17,6 +17,7 @@ import { UsersQueryRepository } from '../users/users.query.repository';
 import { CheckService } from '../other.services/check.service';
 import {
   CustomisableException,
+  CustomNotFoundException,
   EmailAlreadyExistException,
   LoginAlreadyExistException,
 } from '../exceptions/custom.exceptions';
@@ -32,10 +33,27 @@ export class RegistrationEmailResendingInput {
   email: string;
 }
 
+export class PasswordRecoveryEmailInput {
+  @IsString()
+  @IsEmail()
+  @Length(1, 100)
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  email: string;
+}
+
 export class RegistrationConfirmationCodeInput {
   @IsString()
   @Length(1, 100)
   code: string;
+}
+
+export class NewPasswordSetInput {
+  @IsString()
+  @Length(6, 20)
+  newPassword: string;
+  @IsString()
+  @Length(1, 100)
+  recoveryCode: string;
 }
 
 @Controller('auth')
@@ -119,5 +137,27 @@ export class AuthController {
       .status(200)
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
       .send({ accessToken });
+  }
+
+  @Post('password-recovery')
+  @HttpCode(204)
+  async passwordRecovery(@Body() email: PasswordRecoveryEmailInput) {
+    if (!(await this.checkService.isEmailExist(email.email))) {
+      throw new CustomNotFoundException('email');
+    }
+    const result = await this.authService.passwordRecovery(email.email);
+    return result;
+  }
+
+  @Post('new-password')
+  @HttpCode(204)
+  async newPasswordSet(@Body() newPasswordDTO: NewPasswordSetInput) {
+    if (
+      !(await this.checkService.isRecoveryCodeExist(
+        newPasswordDTO.recoveryCode,
+      ))
+    ) {
+      throw new CustomNotFoundException('recoveryCode');
+    }
   }
 }

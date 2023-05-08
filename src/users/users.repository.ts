@@ -50,12 +50,15 @@ export class UsersRepository {
     return user;
   }
   async getUserByPasswordRecoveryCode(code: string) {
-    const user = await this.userModel.findOne({ passwordRecoveryCode: code });
+    const user: UserDocument = await this.userModel.findOne({
+      passwordRecoveryCode: code,
+    });
     if (!user) {
       return null;
     }
     return user;
   }
+  S;
 
   async findUserByLoginOrEmail(
     loginOrEmail: string,
@@ -93,21 +96,24 @@ export class UsersRepository {
     return result.modifiedCount === 1;
   }
 
-  async addPasswordRecoveryData(passwordRecoveryData: PasswordRecoveryModel) {
-    const result = await this.userModel.updateOne(
-      { email: passwordRecoveryData.email },
-      {
-        $set: {
-          passwordRecoveryCode: passwordRecoveryData.passwordRecoveryCode,
-          expirationDateOfRecoveryCode:
-            passwordRecoveryData.expirationDateOfRecoveryCode,
-        },
-      },
-    );
-    return result.modifiedCount === 1;
+  async addPasswordRecoveryData(
+    passwordRecoveryData: PasswordRecoveryModel,
+  ): Promise<boolean> {
+    const user = await this.userModel.findOne({
+      email: passwordRecoveryData.email,
+    });
+    user.passwordRecoveryCode = passwordRecoveryData.passwordRecoveryCode;
+    user.expirationDateOfRecoveryCode =
+      passwordRecoveryData.expirationDateOfRecoveryCode;
+    const result = user.save();
+    return !!result;
   }
 
   async newPasswordSet(_id: Types.ObjectId, passwordHash: string) {
+    if (!Types.ObjectId.isValid(_id)) {
+      return null;
+    }
+    const user = await this.userModel.findById(_id);
     const result = await this.userModel.updateOne(
       { _id: _id },
       {

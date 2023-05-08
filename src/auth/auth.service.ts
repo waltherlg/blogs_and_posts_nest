@@ -100,10 +100,6 @@ export class AuthService {
         400,
       );
     }
-    // const result = await this.usersRepository.refreshConfirmationCode(
-    //   refreshConfirmationData,
-    // );
-    // return result;
     const user = await this.usersRepository.findUserByLoginOrEmail(email);
     user.confirmationCode = refreshConfirmationData.confirmationCode;
     user.expirationDateOfConfirmationCode = add(new Date(), {
@@ -167,6 +163,43 @@ export class AuthService {
       expirationDate,
     );
     return { accessToken, refreshToken };
+  }
+  async passwordRecovery(email: string) {
+    const passwordRecoveryData = {
+      email: email,
+      passwordRecoveryCode: uuidv4(),
+      expirationDateOfRecoveryCode: add(new Date(), {
+        hours: 1,
+        //minutes: 3
+      }),
+    };
+    try {
+      await this.emailManager.sendPasswordRecoveryMessage(passwordRecoveryData);
+    } catch (e) {
+      return null;
+    }
+    const result = await this.usersRepository.addPasswordRecoveryData(
+      passwordRecoveryData,
+    );
+    return result;
+  }
+  async newPasswordSet(
+    newPassword: string,
+    recoveryCode: string,
+  ): Promise<boolean> {
+    const user = await this.usersRepository.getUserByPasswordRecoveryCode(
+      recoveryCode,
+    );
+    if (!user) return false;
+    if (user.expirationDateOfRecoveryCode! < new Date()) {
+      return false;
+    }
+    const passwordHash = await this.bcryptService.hashPassword(newPassword);
+    user.passwordHash = passwordHash;
+    user.passwordRecoveryCode = null;
+    user.expirationDateOfRecoveryCode = null;
+    const result = user.save();
+    return !!result;
   }
   async createTokens(userId: string, incomeDeviceId: string) {
     const deviceId = incomeDeviceId;
