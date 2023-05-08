@@ -152,6 +152,22 @@ export class AuthService {
     await this.usersDeviceRepository.addDeviceInfo(deviceInfoDTO);
     return { accessToken, refreshToken };
   }
+  async refreshingToken(userId, deviceId) {
+    const { accessToken, refreshToken } = await this.createTokens(
+      userId,
+      deviceId.toString(),
+    );
+    const lastActiveDate = await this.getLastActiveDateFromToken(refreshToken);
+    const expirationDate = await this.getExpirationDateFromRefreshToken(
+      refreshToken,
+    );
+    await this.usersDeviceRepository.refreshDeviceInfo(
+      deviceId,
+      lastActiveDate,
+      expirationDate,
+    );
+    return { accessToken, refreshToken };
+  }
   async createTokens(userId: string, incomeDeviceId: string) {
     const deviceId = incomeDeviceId;
     const accessToken = await this.jwtService.signAsync({ userId: userId });

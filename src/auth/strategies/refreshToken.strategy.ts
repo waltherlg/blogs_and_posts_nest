@@ -64,6 +64,6 @@ export class RefreshTokenStrategy extends PassportStrategy(
         401,
       );
     }
-    return userId;
+    return { userId, deviceId };
   }
 }

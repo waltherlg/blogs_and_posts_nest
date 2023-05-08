@@ -109,7 +109,15 @@ export class AuthController {
   }
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
-  async refreshToken(@Req() request) {
-    return request.user;
+  async refreshToken(@Req() request, @Res({ passthrough: true }) response) {
+    const { accessToken, refreshToken } =
+      await this.authService.refreshingToken(
+        request.user.userId,
+        request.user.deviceId,
+      );
+    response
+      .status(200)
+      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .send({ accessToken });
   }
 }

@@ -28,7 +28,20 @@ export class UsersDevicesRepository {
     }
     return device;
   }
-  '?';
+  async refreshDeviceInfo(
+    deviceId,
+    lastActiveDate,
+    expirationDate,
+  ): Promise<boolean> {
+    if (!Types.ObjectId.isValid(deviceId)) {
+      return false;
+    }
+    const userDevice = await this.usersDeviseModel.findById(deviceId);
+    userDevice.lastActiveDate = lastActiveDate;
+    userDevice.expirationDate = expirationDate;
+    const result = userDevice.save();
+    return !!result;
+  }
   async getActiveUserDevices(userId: string) {
     if (!Types.ObjectId.isValid(userId)) {
       return null;
