@@ -133,11 +133,10 @@ export class AuthService {
 
   async login(userId: string, ip: string, userAgent: string) {
     const deviceId = new Types.ObjectId();
-    const accessToken = await this.jwtService.signAsync({ userId: userId });
-    const refreshTokenPayload = { userId, deviceId };
-    const refreshToken = await this.jwtService.signAsync(refreshTokenPayload);
-    console.log(refreshToken);
-
+    const { accessToken, refreshToken } = await this.createTokens(
+      userId,
+      deviceId.toString(),
+    );
     const lastActiveDate = await this.getLastActiveDateFromToken(refreshToken);
     const expirationDate = await this.getExpirationDateFromRefreshToken(
       refreshToken,
@@ -153,28 +152,13 @@ export class AuthService {
     await this.usersDeviceRepository.addDeviceInfo(deviceInfoDTO);
     return { accessToken, refreshToken };
   }
-
-  // async refreshingToken(refreshToken: string) {
-  //   const deviceId = jwtService.getDeviceIdFromRefreshToken(refreshToken);
-  //   const userId = jwtService.getUserIdFromRefreshToken(refreshToken);
-  //   const accessToken = jwtService.createJWT(userId);
-  //   const newRefreshedToken = await jwtService.createJWTRefresh(
-  //     userId,
-  //     deviceId,
-  //   );
-  //   const lastActiveDate = await jwtService.getLastActiveDateFromRefreshToken(
-  //     newRefreshedToken,
-  //   );
-  //   const expirationDate = await jwtService.getExpirationDateFromRefreshToken(
-  //     newRefreshedToken,
-  //   );
-  //   await userDeviceRepo.refreshDeviceInfo(
-  //     deviceId,
-  //     lastActiveDate,
-  //     expirationDate,
-  //   );
-  //   return { accessToken, newRefreshedToken };
-  // }
+  async createTokens(userId: string, incomeDeviceId: string) {
+    const deviceId = incomeDeviceId;
+    const accessToken = await this.jwtService.signAsync({ userId: userId });
+    const refreshTokenPayload = { userId, deviceId };
+    const refreshToken = await this.jwtService.signAsync(refreshTokenPayload);
+    return { accessToken, refreshToken };
+  }
 
   getUserIdFromToken(token) {
     try {
