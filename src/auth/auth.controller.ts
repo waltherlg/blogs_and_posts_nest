@@ -157,7 +157,37 @@ export class AuthController {
         newPasswordDTO.recoveryCode,
       ))
     ) {
-      throw new CustomNotFoundException('recoveryCode');
+      throw new CustomisableException(
+        'recoveryCode',
+        'recovery code incorrect',
+        400,
+      );
+    }
+    const result = await this.authService.newPasswordSet(newPasswordDTO);
+    if (result) {
+      return true;
+    } else {
+      throw new CustomisableException(
+        'recoveryCode',
+        'error of new password set',
+        400,
+      );
+    }
+  }
+  @UseGuards(RefreshTokenGuard)
+  @Post('logout')
+  @HttpCode(204)
+  async logout(@Req() request, @Res({ passthrough: true }) response) {
+    const isLogout = await this.authService.logout(
+      request.user.userId,
+      request.user.deviceId,
+    );
+    if (isLogout) {
+      response
+        .cookie('refreshToken', '', { httpOnly: true, secure: true })
+        .sendStatus(204);
+    } else {
+      throw new CustomisableException('logout', 'logout error', 400);
     }
   }
 }

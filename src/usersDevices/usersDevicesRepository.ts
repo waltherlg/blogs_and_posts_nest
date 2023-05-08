@@ -53,6 +53,17 @@ export class UsersDevicesRepository {
       return device.prepareUsersDeviceForOutput();
     });
   }
+  async deleteUserDeviceById(
+    userId: string,
+    deviceId: string,
+  ): Promise<boolean> {
+    if (Types.ObjectId.isValid(deviceId)) {
+      const result = await this.usersDeviseModel.deleteOne({
+        $and: [{ _id: deviceId }, { userId: userId }],
+      });
+      return result.deletedCount === 1;
+    } else return false;
+  }
   async deleteAllUsersDevices() {
     return await this.usersDeviseModel.deleteMany({});
   }

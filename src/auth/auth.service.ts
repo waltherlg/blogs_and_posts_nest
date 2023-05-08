@@ -183,23 +183,27 @@ export class AuthService {
     );
     return result;
   }
-  async newPasswordSet(
-    newPassword: string,
-    recoveryCode: string,
-  ): Promise<boolean> {
+  async newPasswordSet(newPasswordDTO): Promise<boolean> {
     const user = await this.usersRepository.getUserByPasswordRecoveryCode(
-      recoveryCode,
+      newPasswordDTO.recoveryCode,
     );
     if (!user) return false;
     if (user.expirationDateOfRecoveryCode! < new Date()) {
       return false;
     }
-    const passwordHash = await this.bcryptService.hashPassword(newPassword);
+    const passwordHash = await this.bcryptService.hashPassword(
+      newPasswordDTO.newPassword,
+    );
     user.passwordHash = passwordHash;
     user.passwordRecoveryCode = null;
     user.expirationDateOfRecoveryCode = null;
     const result = user.save();
     return !!result;
+  }
+  async logout(userId: string, deviceId: string): Promise<boolean> {
+    const isDeviceDeleted =
+      await this.usersDeviceRepository.deleteUserDeviceById(userId, deviceId);
+    return isDeviceDeleted;
   }
   async createTokens(userId: string, incomeDeviceId: string) {
     const deviceId = incomeDeviceId;
