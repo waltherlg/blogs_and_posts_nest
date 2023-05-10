@@ -1,8 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CommentDocument, CommentTypeOutput } from './comments.types';
+import { CommentDocument, CommentTypeOutput, Comment } from './comments.types';
 import { User, UserDocument } from '../users/users.types';
-
+import { Injectable } from '@nestjs/common';
+@Injectable()
 export class CommentsQueryRepository {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
@@ -21,16 +22,14 @@ export class CommentsQueryRepository {
     if (!comment) {
       return null;
     }
-    if (userId) {
-      if (Types.ObjectId.isValid(userId)) {
-        const user = await this.userModel.findById(userId);
-        if (user) {
-          const likedComment = user.likedComments.find(
-            (e) => e.commentsId === commentId,
-          );
-          if (likedComment) {
-            comment.myStatus = likedComment.status;
-          }
+    if (userId && Types.ObjectId.isValid(userId)) {
+      const user = await this.userModel.findById(userId);
+      if (user) {
+        const likedComment = user.likedComments.find(
+          (e) => e.commentsId === commentId,
+        );
+        if (likedComment) {
+          comment.myStatus = likedComment.status;
         }
       }
     }
