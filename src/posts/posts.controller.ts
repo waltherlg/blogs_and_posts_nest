@@ -20,9 +20,15 @@ import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
 import { PostsQueryRepository } from './posts.query.repository';
 
-import { PostNotFoundException } from '../exceptions/custom.exceptions';
+import {
+  CustomNotFoundException,
+  PostNotFoundException,
+} from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CommentsService } from '../comments/comments.service';
+import { CommentsQueryRepository } from '../comments/comments.query.repository';
 
 export class CreatePostInputModelType {
   @IsString()
@@ -53,14 +59,21 @@ export class UpdatePostInputModelType {
   @Length(1, 100)
   blogId: string;
 }
+export class CreateCommentInputModelType {
+  @IsString()
+  @Length(20, 300)
+  content: string;
+}
 @Controller('posts')
 export class PostController {
   constructor(
     private readonly appService: AppService,
     private readonly postsService: PostsService,
     private readonly checkService: CheckService,
+    private readonly commentService: CommentsService,
     private readonly postsRepository: PostsRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
   @UseGuards(BasicAuthGuard)
   @Post()
@@ -109,6 +122,25 @@ export class PostController {
     return await this.postsQueryRepository.getAllPosts(
       mergedQueryParams,
       request.user,
+    );
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/comments')
+  async createCommentByPostId(
+    @Req() request,
+    @Param('id') postId: string,
+    @Body() content: CreateCommentInputModelType,
+  ) {
+    if (!(await this.checkService.isPostExist(postId))) {
+      throw new CustomNotFoundException('post');
+    }
+    const newCommentId = await this.commentService.createComment(
+      postId,
+      content.content,
+      request.user,
+    );
+    const newComment = await this.commentsQueryRepository.getCommentById(
+      newCommentId,
     );
   }
 }
