@@ -142,5 +142,6 @@ export class PostController {
     const newComment = await this.commentsQueryRepository.getCommentById(
       newCommentId,
     );
+    return newComment;
   }
 }

@@ -69,9 +69,10 @@ describe('Comments CRUD (e2e)', () => {
       .expect(201);
 
     const createdResponse = testsResponse.body;
+    createdPostId = createdResponse.id;
 
     expect(createdResponse).toEqual({
-      id: createdPostId,
+      id: expect.any(String),
       title: 'newCreatedPost',
       shortDescription: 'newPostsShortDescription',
       content: 'some content',
@@ -124,10 +125,9 @@ describe('Comments CRUD (e2e)', () => {
       })
       .expect(201);
 
-    const createdResponseOfFirstPost = testsResponse.body;
-    createdPostId = createdResponseOfFirstPost.id;
+    const createdResponseOfFirstComment = testsResponse.body;
 
-    expect(createdResponseOfFirstPost).toEqual({
+    expect(createdResponseOfFirstComment).toEqual({
       id: expect.any(String),
       content: 'some comment for testing',
       commentatorInfo: {

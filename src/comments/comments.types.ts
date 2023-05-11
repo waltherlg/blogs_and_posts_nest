@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsNotEmpty } from 'class-validator';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export class CommentDBType {
@@ -34,27 +35,37 @@ export type CommentTypeOutput = {
 };
 
 export type CommentDocument = HydratedDocument<Comment>;
-
+@Schema()
 export class Comment {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId })
+  @IsNotEmpty()
   _id: Types.ObjectId;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   parentType: string;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   parentId: string;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   content: string;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   userId: string;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   userLogin: string;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   createdAt: string;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   likesCount: number;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   dislikesCount: number;
-  @Prop()
+  @Prop({ required: true })
+  @IsNotEmpty()
   myStatus: string;
   prepareCommentForOutput() {
     return {
