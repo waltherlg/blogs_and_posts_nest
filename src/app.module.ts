@@ -47,6 +47,7 @@ import { Comment, CommentSchema } from './comments/comments.types';
 import { CommentsRepository } from './comments/comments.repository';
 import { CommentsQueryRepository } from './comments/comments.query.repository';
 import { CommentsService } from './comments/comments.service';
+import { CommentsControllers } from './comments/comments.controller';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -102,6 +103,7 @@ if (!emailUser || !emailPassword) {
     PostController,
     UsersController,
     AuthController,
+    CommentsControllers,
     TestingController,
     SecurityController,
   ],

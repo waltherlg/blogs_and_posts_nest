@@ -33,4 +33,10 @@ export class CommentsService {
     );
     return createdCommentId;
   }
+  async deleteCommentById(commentId): Promise<boolean> {
+    const isDeleted = await this.commentsRepository.deleteCommentById(
+      commentId,
+    );
+    return isDeleted;
+  }
 }

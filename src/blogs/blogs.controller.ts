@@ -132,6 +132,8 @@ export class BlogsController {
     @Param('id') blogId: string,
     @Query() queryParams: RequestQueryParamsModel,
   ) {
+    await this.isBlogExist(blogId);
+
     if (!(await this.checkService.isBlogExist(blogId))) {
       throw new BlogNotFoundException();
     }
@@ -141,9 +143,9 @@ export class BlogsController {
       blogId,
     );
   }
-  // async isBlogExist(blogId) {
-  //   if (!(await this.checkService.isBlogExist(blogId))) {
-  //     throw new BlogNotFoundException();
-  //   }
-  //}
+  async isBlogExist(blogId) {
+    if (!(await this.checkService.isBlogExist(blogId))) {
+      throw new BlogNotFoundException();
+    }
+  }
 }

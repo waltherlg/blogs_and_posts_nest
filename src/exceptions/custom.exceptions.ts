@@ -8,10 +8,7 @@ export class CustomisableException extends HttpException {
 
 export class CustomNotFoundException extends HttpException {
   constructor(field: string) {
-    super(
-      messageConstructor(field, field + ' not found'),
-      HttpStatus.NOT_FOUND,
-    );
+    super(messageConstructor(field, field + ' not found'), 404);
   }
 }
 export class BlogNotFoundException extends HttpException {

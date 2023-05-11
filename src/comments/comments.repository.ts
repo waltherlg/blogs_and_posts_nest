@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CommentDocument, Comment, CommentDBType } from './comments.types';
 
 @Injectable()
@@ -14,5 +14,25 @@ export class CommentsRepository {
     console.log('comment ', comment);
     await comment.save();
     return comment._id.toString();
+  }
+
+  async getCommentDbTypeById(commentId) {
+    if (!Types.ObjectId.isValid(commentId)) {
+      return null;
+    }
+    const comment: CommentDocument = await this.commentModel.findById(
+      commentId,
+    );
+    if (!comment) {
+      return null;
+    }
+    return comment;
+  }
+  async deleteCommentById(commentId): Promise<boolean> {
+    if (!Types.ObjectId.isValid(commentId)) {
+      return false;
+    }
+    const isDeleted = await this.commentModel.deleteOne({ _id: commentId });
+    return !!isDeleted;
   }
 }

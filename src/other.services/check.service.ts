@@ -2,12 +2,14 @@ import { BlogsRepository } from '../blogs/blogs.repository';
 import { Injectable } from '@nestjs/common';
 import { PostsRepository } from '../posts/posts.repository';
 import { UsersRepository } from '../users/users.repository';
+import { CommentsRepository } from '../comments/comments.repository';
 @Injectable()
 export class CheckService {
   constructor(
     private readonly blogsRepository: BlogsRepository,
     private readonly postsRepository: PostsRepository,
     private readonly usersRepository: UsersRepository,
+    private readonly commentsRepository: CommentsRepository,
   ) {}
   async isBlogExist(blogId): Promise<boolean> {
     const blog = await this.blogsRepository.getBlogDBTypeById(blogId);
@@ -52,6 +54,13 @@ export class CheckService {
   async isRecoveryCodeExist(code: string): Promise<boolean> {
     const isExist = await this.usersRepository.getUserByPasswordRecoveryCode(
       code,
+    );
+    return !!isExist;
+  }
+
+  async isCommentExist(commentId): Promise<boolean> {
+    const isExist = await this.commentsRepository.getCommentDbTypeById(
+      commentId,
     );
     return !!isExist;
   }
