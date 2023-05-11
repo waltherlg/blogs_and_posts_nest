@@ -82,7 +82,7 @@ export class BlogsController {
   async getBlogById(@Param('id') blogsId: string) {
     const blog = await this.blogsQueryRepository.getBlogById(blogsId);
     if (!blog) {
-      throw new CustomisableException('blog', 'blog not found 400', 400);
+      throw new CustomisableException('blog', 'blog not found', 404);
     }
     return blog;
   }
@@ -109,7 +109,7 @@ export class BlogsController {
     }
     return await this.blogsService.deleteBlogById(blogId);
   }
-  @UseGuards(JwtAuthGuard)
+
   @Get()
   async getAllBlogs(@Query() queryParams: RequestBlogsQueryModel) {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
@@ -132,19 +132,18 @@ export class BlogsController {
     @Param('id') blogId: string,
     @Query() queryParams: RequestQueryParamsModel,
   ) {
-    // if (!(await this.checkService.isBlogExist(blogId))) {
-    //   throw new BlogNotFoundException();
-    // }
-    await this.isBlogExist(blogId);
+    if (!(await this.checkService.isBlogExist(blogId))) {
+      throw new BlogNotFoundException();
+    }
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
     return await this.postsQueryRepository.getAllPostsByBlogsId(
       mergedQueryParams,
       blogId,
     );
   }
-  async isBlogExist(blogId) {
-    if (!(await this.checkService.isBlogExist(blogId))) {
-      throw new BlogNotFoundException();
-    }
-  }
+  // async isBlogExist(blogId) {
+  //   if (!(await this.checkService.isBlogExist(blogId))) {
+  //     throw new BlogNotFoundException();
+  //   }
+  //}
 }
