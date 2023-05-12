@@ -35,4 +35,19 @@ export class CommentsRepository {
     const isDeleted = await this.commentModel.deleteOne({ _id: commentId });
     return !!isDeleted;
   }
+
+  async updateCommentById(commentId, content): Promise<boolean> {
+    if (!Types.ObjectId.isValid(commentId)) {
+      return false;
+    }
+    const comment: CommentDocument = await this.commentModel.findById(
+      commentId,
+    );
+    if (!comment) {
+      return false;
+    }
+    comment.content = content;
+    const result = await comment.save();
+    return !!result;
+  }
 }

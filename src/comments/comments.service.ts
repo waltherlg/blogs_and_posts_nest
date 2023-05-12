@@ -39,4 +39,11 @@ export class CommentsService {
     );
     return isDeleted;
   }
+
+  async updateCommentById(
+    commentId: string,
+    content: string,
+  ): Promise<boolean> {
+    return await this.commentsRepository.updateCommentById(commentId, content);
+  }
 }

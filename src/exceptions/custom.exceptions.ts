@@ -1,5 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
+// export class SomethingWrongException extends HttpException {
+//
+// }
 export class CustomisableException extends HttpException {
   constructor(field: string, message: string, status: number) {
     super(messageConstructor(field, message), status);

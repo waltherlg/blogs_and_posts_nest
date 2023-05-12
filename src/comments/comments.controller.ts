@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -19,6 +20,13 @@ import {
 } from '../exceptions/custom.exceptions';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { th } from 'date-fns/locale';
+import { IsString, Length } from 'class-validator';
+
+export class UpdateCommentInputModelType {
+  @IsString()
+  @Length(20, 300)
+  content: string;
+}
 
 @Controller('comments')
 export class CommentsControllers {
@@ -51,12 +59,23 @@ export class CommentsControllers {
     );
     return isCommentDeleted;
   }
-  // @UseGuards(JwtAuthGuard)
-  // @Put(':id')
-  // async updateCommentById(@Param('id') commentId: string) {
-  //   if (!(await this.checkService.isCommentExist(commentId))) {
-  //     throw new CustomNotFoundException('comment');
-  //   }
-  //   const isUpdated = await this.commentsService.updateComment
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  async updateCommentById(
+    @Param('id') commentId: string,
+    @Body() updateDTO: UpdateCommentInputModelType,
+  ) {
+    if (!(await this.checkService.isCommentExist(commentId))) {
+      throw new CustomNotFoundException('comment');
+    }
+    const isUpdated = await this.commentsService.updateCommentById(
+      commentId,
+      updateDTO.content,
+    );
+    // if (isUpdated){
+    //   return true
+    // } else {
+    //   throw
+    // }
+  }
 }
