@@ -20,6 +20,7 @@ import {
   CustomNotFoundException,
   EmailAlreadyExistException,
   LoginAlreadyExistException,
+  UnableException,
 } from '../exceptions/custom.exceptions';
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -77,6 +78,9 @@ export class AuthController {
       userCreateInputModel,
     );
     const user = await this.usersQueryRepository.getUserById(newUsersId);
+    if(!user){
+      throw new UnableException('registration')
+    }
     return user;
   }
   @Post('registration-email-resending')
@@ -95,14 +99,15 @@ export class AuthController {
     const result = await this.authService.registrationEmailResending(
       email.email,
     );
-    if (result) {
-      return true;
-    }
-    throw new CustomisableException(
+    if (!result) {
+      throw new CustomisableException(
       'email',
       'the application failed to send an email',
-      400,
-    );
+      400
+      );
+    }
+
+    
   }
   @Post('registration-confirmation')
   @HttpCode(204)
@@ -110,8 +115,9 @@ export class AuthController {
     @Body() Code: RegistrationConfirmationCodeInput,
   ) {
     // вариант где код будет проверятся в auth сервисе
-    return await this.authService.confirmEmail(Code.code);
+    await this.authService.confirmEmail(Code.code);
   }
+
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() request, @Res({ passthrough: true }) response) {
@@ -139,6 +145,8 @@ export class AuthController {
       .send({ accessToken });
   }
 
+  //current user info
+
   @Post('password-recovery')
   @HttpCode(204)
   async passwordRecovery(@Body() email: PasswordRecoveryEmailInput) {
@@ -146,7 +154,9 @@ export class AuthController {
       throw new CustomNotFoundException('email');
     }
     const result = await this.authService.passwordRecovery(email.email);
-    return result;
+    if(!result){
+      throw new UnableException('password recovery')
+    }
   }
 
   @Post('new-password')
@@ -164,15 +174,9 @@ export class AuthController {
       );
     }
     const result = await this.authService.newPasswordSet(newPasswordDTO);
-    if (result) {
-      return true;
-    } else {
-      throw new CustomisableException(
-        'recoveryCode',
-        'error of new password set',
-        400,
-      );
-    }
+    if (!result) {
+      throw new UnableException('password change')
+    } 
   }
   @UseGuards(RefreshTokenGuard)
   @Post('logout')

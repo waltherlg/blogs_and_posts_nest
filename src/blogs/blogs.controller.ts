@@ -29,6 +29,7 @@ import { PostsQueryRepository } from '../posts/posts.query.repository';
 import {
   BlogNotFoundException,
   CustomisableException,
+  UnableException,
 } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -76,7 +77,10 @@ export class BlogsController {
   @Post()
   async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
     const newBlogsId = await this.blogsService.createBlog(blogCreateInputModel);
-    return await this.blogsQueryRepository.getBlogById(newBlogsId);
+    const newBlog = await this.blogsQueryRepository.getBlogById(newBlogsId);
+    if(!newBlog){
+      throw new UnableException('blog creating')
+    }
   }
   @Get(':id')
   async getBlogById(@Param('id') blogsId: string) {
@@ -94,10 +98,13 @@ export class BlogsController {
     @Body() blogUpdateInputModel: UpdateBlogInputModelType,
   ) {
     // check is blog exist in blogService
-    return await this.blogsService.updateBlogById(
+    const result = await this.blogsService.updateBlogById(
       blogsId,
       blogUpdateInputModel,
     );
+    if(!result){
+      throw new UnableException('blog updating')
+    }
   }
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
@@ -107,7 +114,10 @@ export class BlogsController {
     if (!isBlogExist) {
       throw new BlogNotFoundException();
     }
-    return await this.blogsService.deleteBlogById(blogId);
+    const result = await this.blogsService.deleteBlogById(blogId);
+    if(!result){
+      throw new UnableException('blog deleting')
+    }
   }
 
   @Get()
@@ -124,7 +134,10 @@ export class BlogsController {
     const postCreateModel = { ...inputPostCreateModel, blogId: blogId };
     //check is blog exist in post service
     const createdPostId = await this.postsService.createPost(postCreateModel);
-    return await this.postsQueryRepository.getPostById(createdPostId);
+    const result = await this.postsQueryRepository.getPostById(createdPostId);
+    if(!result){
+      throw new UnableException('post creating')
+    }
   }
 
   @Get(':id/posts')

@@ -23,6 +23,7 @@ import { PostsQueryRepository } from './posts.query.repository';
 import {
   CustomNotFoundException,
   PostNotFoundException,
+  UnableException,
 } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
@@ -79,7 +80,11 @@ export class PostController {
   @Post()
   async createPost(@Body() postCreateInputModel: CreatePostInputModelType) {
     const newPostId = await this.postsService.createPost(postCreateInputModel);
-    return await this.postsQueryRepository.getPostById(newPostId);
+    const newPost = await this.postsQueryRepository.getPostById(newPostId);
+    if(!newPost){
+      throw new UnableException('post creating')
+    }
+    return newPost
   }
   @UseGuards(OptionalJwtAuthGuard)
   @Get(':id')
@@ -100,7 +105,10 @@ export class PostController {
     if (!(await this.checkService.isPostExist(postId))) {
       throw new PostNotFoundException();
     }
-    return await this.postsService.updatePostById(postId, postUpdateInputModel);
+    const result = await this.postsService.updatePostById(postId, postUpdateInputModel);
+    if(!result){
+      throw new UnableException('post updating')
+    }
   }
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
@@ -109,7 +117,10 @@ export class PostController {
     if (!(await this.checkService.isPostExist(postId))) {
       throw new PostNotFoundException();
     }
-    return await this.postsService.deletePostById(postId);
+    const result = await this.postsService.deletePostById(postId);
+    if(!result){
+      throw new UnableException('post deleting')
+    }
   }
   @UseGuards(OptionalJwtAuthGuard)
   @Get()
@@ -142,6 +153,9 @@ export class PostController {
     const newComment = await this.commentsQueryRepository.getCommentById(
       newCommentId,
     );
+    if(!newComment){
+      throw new UnableException('comment creating')
+    }
     return newComment;
   }
 }

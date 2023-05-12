@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-// export class SomethingWrongException extends HttpException {
-//
-// }
+export class UnableException extends HttpException {
+  constructor(field: string, message?:string) {
+    super(messageConstructor(field, message || 'Unable to complete a query during a ' + field + ' operation'), 418);
+  }
+}
 export class CustomisableException extends HttpException {
   constructor(field: string, message: string, status: number) {
     super(messageConstructor(field, message), status);

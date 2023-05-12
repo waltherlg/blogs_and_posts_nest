@@ -164,7 +164,7 @@ export class AuthService {
     );
     return { accessToken, refreshToken };
   }
-  async passwordRecovery(email: string) {
+  async passwordRecovery(email: string): Promise<boolean> {
     const passwordRecoveryData = {
       email: email,
       passwordRecoveryCode: uuidv4(),
@@ -176,7 +176,7 @@ export class AuthService {
     try {
       await this.emailManager.sendPasswordRecoveryMessage(passwordRecoveryData);
     } catch (e) {
-      return null;
+      return false;
     }
     const result = await this.usersRepository.addPasswordRecoveryData(
       passwordRecoveryData,

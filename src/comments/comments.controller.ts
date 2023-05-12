@@ -17,6 +17,7 @@ import {
   BlogNotFoundException,
   CustomisableException,
   CustomNotFoundException,
+  UnableException,
 } from '../exceptions/custom.exceptions';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { th } from 'date-fns/locale';
@@ -40,7 +41,7 @@ export class CommentsControllers {
   async getCommentById(@Req() request, @Param('id') commentId: string) {
     const comment = await this.commentsQueryRepository.getCommentById(
       commentId,
-      request.user,
+      request.user, //user = userId
     );
     if (!comment) {
       throw new CustomNotFoundException('comment');
@@ -57,7 +58,9 @@ export class CommentsControllers {
     const isCommentDeleted = await this.commentsService.deleteCommentById(
       commentId,
     );
-    return isCommentDeleted;
+    if (!isCommentDeleted){
+      throw new UnableException('comment deleting')
+    }
   }
   @UseGuards(JwtAuthGuard)
   @Put(':id')
@@ -72,10 +75,8 @@ export class CommentsControllers {
       commentId,
       updateDTO.content,
     );
-    // if (isUpdated){
-    //   return true
-    // } else {
-    //   throw
-    // }
+    if (!isUpdated){
+      throw new UnableException('comment update')
+    } 
   }
 }
