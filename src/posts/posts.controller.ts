@@ -158,4 +158,19 @@ export class PostController {
     }
     return newComment;
   }
+  @UseGuards(OptionalJwtAuthGuard)
+  @Get(':id/comments')
+  async getAllCommentsByPostId(
+    @Req() request,
+    @Param('id') postId: string,
+    @Query() queryParams: RequestQueryParamsModel,
+  ) {
+    const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
+    console.log('request.user ', request.user);
+    return await this.commentsQueryRepository.getAllCommentsByPostId(
+      postId,
+      mergedQueryParams,
+      request.user,
+    );
+  }
 }

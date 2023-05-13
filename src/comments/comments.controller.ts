@@ -29,6 +29,11 @@ export class UpdateCommentInputModelType {
   content: string;
 }
 
+export class SetLikeStatusInputModel {
+  @IsString()
+  likeStatus: string;
+}
+
 @Controller('comments')
 export class CommentsControllers {
   constructor(
@@ -79,4 +84,31 @@ export class CommentsControllers {
       throw new UnableException('comment update')
     } 
   }
+  @Put(':id/like-status') 
+  async setLikeStatusForComment(@Req() request, @Param('id') commentId: string,) {
+    try {
+        const isCommentExist = await this.commentsQueryRepo.getCommentById(req.params.commentsId.toString())
+        console.log('isCommentExist ', isCommentExist)
+        if (!isCommentExist) {
+            res.sendStatus(404)
+            return
+        }
+        const token = req.headers.authorization!.split(' ')[1]
+        console.log('token ', token)
+        const userId = await jwtService.getUserIdFromRefreshToken(token)
+        console.log('userId ', userId)
+        let updateCommentLike = await this.likeService.updateCommentLike(
+            userId,
+            req.params.commentsId.toString(),
+            req.body.likeStatus)
+        console.log('updateCommentLike ', updateCommentLike)
+        if (updateCommentLike) {
+            return res.sendStatus(204)
+        } else {
+            return res.status(400).send('not like')
+        }
+    } catch (error) {
+        return res.status(405).send(`controller comment like status error: ${(error as any).message}`)
+    }
+}
 }

@@ -57,8 +57,7 @@ export class UsersRepository {
       return null;
     }
     return user;
-  }
-  S;
+  };
 
   async findUserByLoginOrEmail(
     loginOrEmail: string,
