@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Injectable,
   Post,
+  Get,
   Req,
   Res,
   UseGuards,
@@ -26,6 +27,8 @@ import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UserAuthModel } from './auth.types';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { request } from 'express';
 export class RegistrationEmailResendingInput {
   @IsString()
   @IsEmail()
@@ -131,6 +134,17 @@ export class AuthController {
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
       .send({ accessToken });
   }
+  //current user info
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async currentUserInfo(@Req()request){
+    const currentUserInfo = await this.usersService.currentUserInfo(request.user)
+    if(!currentUserInfo){
+      throw new UnableException('get current user info')
+    }
+    return currentUserInfo;
+  }
+
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   async refreshToken(@Req() request, @Res({ passthrough: true }) response) {
@@ -145,7 +159,7 @@ export class AuthController {
       .send({ accessToken });
   }
 
-  //current user info
+  
 
   @Post('password-recovery')
   @HttpCode(204)
@@ -193,5 +207,6 @@ export class AuthController {
     } else {
       throw new CustomisableException('logout', 'logout error', 400);
     }
+  
   }
 }
