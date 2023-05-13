@@ -6,7 +6,8 @@ import { Injectable } from "@nestjs/common/decorators"
 @Injectable()
 export class LikeService {
     constructor(private readonly commentsRepository: CommentsRepository, 
-        private readonly usersRepository: UsersRepository, protected usersQueryRepo: UsersQueryRepo, protected postsRepository: PostsRepository) {
+        private readonly usersRepository: UsersRepository, 
+        private readonly postsRepository: PostsRepository) {
     }
 
     async updateCommentLike(userId: string, commentsId: string, status: string): Promise<boolean>{
@@ -47,5 +48,28 @@ export class LikeService {
             }
             return true
         } else return true
+    }
+    async updatePostLike(userId: string, postsId: string, status: string): Promise<boolean>{
+        const user = await this.usersRepository.getUserDBTypeById(userId)
+        if(!user) return false
+        const post = await this.postsRepository.getPostDBTypeById(postsId)
+        if(!post) return false
+        const postsLikesCollection = post.likesCollection
+        const userPostStatus = postsLikesCollection.find(post => post.userId === userId)
+        if(!userPostStatus){
+            const createdAt = new Date()
+            const newLike = {
+                addedAt: createdAt.toISOString(),
+                userId,
+                login: user.login,
+                status: status
+            }
+            post.likesCollection.push(newLike)
+            const result = await this.postsRepository.savePost(post)
+            return result
+        }
+        userPostStatus.status = status
+        const result = await this.postsRepository.savePost(post)
+        return result
     }
 }

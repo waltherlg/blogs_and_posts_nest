@@ -8,10 +8,12 @@ import {
   Put,
   Req,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CommentsQueryRepository } from './comments.query.repository';
 import { CheckService } from '../other.services/check.service';
+import { LikeService } from 'src/other.services/like.service';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import {
   BlogNotFoundException,
@@ -28,8 +30,7 @@ export class UpdateCommentInputModelType {
   @Length(20, 300)
   content: string;
 }
-
-export class SetLikeStatusInputModel {
+export class SetLikeStatusForCommentInputModel {
   @IsString()
   likeStatus: string;
 }
@@ -40,6 +41,7 @@ export class CommentsControllers {
     private readonly commentsService: CommentsService,
     private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly checkService: CheckService,
+    private readonly likeService: LikeService,
   ) {}
   @UseGuards(OptionalJwtAuthGuard)
   @Get(':id')
@@ -84,31 +86,20 @@ export class CommentsControllers {
       throw new UnableException('comment update')
     } 
   }
+  @UseGuards(JwtAuthGuard)
   @Put(':id/like-status') 
-  async setLikeStatusForComment(@Req() request, @Param('id') commentId: string,) {
-    try {
-        const isCommentExist = await this.commentsQueryRepo.getCommentById(req.params.commentsId.toString())
-        console.log('isCommentExist ', isCommentExist)
+  async setLikeStatusForComment(@Req() request, @Param('id') commentId: string, @Body(new ValidationPipe({ transform: true })) likeStatus: SetLikeStatusForCommentInputModel) {
+    
+        const isCommentExist = await this.checkService.isCommentExist(commentId)
         if (!isCommentExist) {
-            res.sendStatus(404)
-            return
+            throw new CustomNotFoundException('comment')
         }
-        const token = req.headers.authorization!.split(' ')[1]
-        console.log('token ', token)
-        const userId = await jwtService.getUserIdFromRefreshToken(token)
-        console.log('userId ', userId)
         let updateCommentLike = await this.likeService.updateCommentLike(
-            userId,
-            req.params.commentsId.toString(),
-            req.body.likeStatus)
-        console.log('updateCommentLike ', updateCommentLike)
-        if (updateCommentLike) {
-            return res.sendStatus(204)
-        } else {
-            return res.status(400).send('not like')
+            request.userId,
+            commentId,
+            likeStatus.likeStatus)
+        if (!updateCommentLike) {
+            throw new UnableException('set like status')
         }
-    } catch (error) {
-        return res.status(405).send(`controller comment like status error: ${(error as any).message}`)
-    }
 }
 }

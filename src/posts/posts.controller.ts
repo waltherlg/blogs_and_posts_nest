@@ -11,6 +11,7 @@ import {
   Query,
   Req,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AppService } from '../app.service';
 import { RequestQueryParamsModel, DEFAULT_QUERY_PARAMS } from '../models/types';
@@ -30,6 +31,8 @@ import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CommentsService } from '../comments/comments.service';
 import { CommentsQueryRepository } from '../comments/comments.query.repository';
+import { log } from 'console';
+import { LikeService } from 'src/other.services/like.service';
 
 export class CreatePostInputModelType {
   @IsString()
@@ -65,6 +68,10 @@ export class CreateCommentInputModelType {
   @Length(20, 300)
   content: string;
 }
+export class SetLikeStatusForPostInputModel {
+  @IsString()
+  likeStatus: string;
+}
 @Controller('posts')
 export class PostController {
   constructor(
@@ -72,16 +79,17 @@ export class PostController {
     private readonly postsService: PostsService,
     private readonly checkService: CheckService,
     private readonly commentService: CommentsService,
+    private readonly likeService: LikeService,
     private readonly postsRepository: PostsRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
-  ) {}
+  ) { }
   @UseGuards(BasicAuthGuard)
   @Post()
   async createPost(@Body() postCreateInputModel: CreatePostInputModelType) {
     const newPostId = await this.postsService.createPost(postCreateInputModel);
     const newPost = await this.postsQueryRepository.getPostById(newPostId);
-    if(!newPost){
+    if (!newPost) {
       throw new UnableException('post creating')
     }
     return newPost
@@ -106,7 +114,7 @@ export class PostController {
       throw new PostNotFoundException();
     }
     const result = await this.postsService.updatePostById(postId, postUpdateInputModel);
-    if(!result){
+    if (!result) {
       throw new UnableException('post updating')
     }
   }
@@ -118,7 +126,7 @@ export class PostController {
       throw new PostNotFoundException();
     }
     const result = await this.postsService.deletePostById(postId);
-    if(!result){
+    if (!result) {
       throw new UnableException('post deleting')
     }
   }
@@ -153,7 +161,7 @@ export class PostController {
     const newComment = await this.commentsQueryRepository.getCommentById(
       newCommentId,
     );
-    if(!newComment){
+    if (!newComment) {
       throw new UnableException('comment creating')
     }
     return newComment;
@@ -172,5 +180,20 @@ export class PostController {
       mergedQueryParams,
       request.user,
     );
+  }
+  @UseGuards(JwtAuthGuard)
+  @Put(':postId/like-status')
+  async setLikeStatusForPost(@Req() request, @Param('postId') postId: string, @Body(new ValidationPipe({ transform: true })) likeStatus: SetLikeStatusForPostInputModel) {
+
+    if (!await this.checkService.isPostExist(postId)) {
+      throw new CustomNotFoundException('post')
+    }
+    const isPostLiked = await this.likeService.updatePostLike(
+      request.user,
+      postId,
+      likeStatus.likeStatus)
+    if (!isPostLiked) {
+      throw new UnableException('set like status for post')
+    }
   }
 }

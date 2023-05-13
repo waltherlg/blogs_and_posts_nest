@@ -9,9 +9,7 @@ export class CommentsRepository {
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
   ) {}
   async createComment(commentDTO: CommentDBType): Promise<string> {
-    console.log('CommentDTO ', commentDTO);
     const comment = new this.commentModel(commentDTO);
-    console.log('comment ', comment);
     await comment.save();
     return comment._id.toString();
   }
@@ -50,4 +48,64 @@ export class CommentsRepository {
     const result = await comment.save();
     return !!result;
   }
+  
+  async setCountCommentsLike(commentsId: string, status: string) {
+    if (!Types.ObjectId.isValid(commentsId)) {
+        return false
+    }
+    let comment = await this.commentModel.findById(commentsId)
+    if (!comment) return false
+    if (status === 'Like') {
+        comment.likesCount++
+    }
+    if (status === 'Dislike') {
+        comment.dislikesCount++
+    }
+    await comment.save()
+    return true
+}
+
+async increaseCommentsLikes(commentsId: string){
+    if (!Types.ObjectId.isValid(commentsId)) {
+        return false
+    }
+    let comment = await this.commentModel.findById(commentsId)
+    if (!comment) return false
+    comment.likesCount += 1
+    const result = await comment.save()
+    return !!result
+}
+
+async decreaseCommentsLikes(commentsId: string){
+    if (!Types.ObjectId.isValid(commentsId)) {
+        return false
+    }
+    let comment = await this.commentModel.findById(commentsId)
+    if (!comment) return false
+    comment.likesCount -= 1
+    const result = await comment.save()
+    return !!result
+}
+
+async increaseCommentsDislikes(commentsId: string){
+    if (!Types.ObjectId.isValid(commentsId)) {
+        return false
+    }
+    let comment = await this.commentModel.findById(commentsId)
+    if (!comment) return false
+    comment.dislikesCount += 1
+    const result = await comment.save()
+    return !!result
+}
+
+async decreaseCommentsDislikes(commentsId: string){
+    if (!Types.ObjectId.isValid(commentsId)) {
+        return false
+    }
+    let comment = await this.commentModel.findById(commentsId)
+    if (!comment) return false
+    comment.dislikesCount -= 1
+    const result = await comment.save()
+    return !!result
+}
 }
