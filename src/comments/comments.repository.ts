@@ -48,64 +48,64 @@ export class CommentsRepository {
     const result = await comment.save();
     return !!result;
   }
-  
+
   async setCountCommentsLike(commentsId: string, status: string) {
     if (!Types.ObjectId.isValid(commentsId)) {
-        return false
+      return false;
     }
-    let comment = await this.commentModel.findById(commentsId)
-    if (!comment) return false
+    const comment = await this.commentModel.findById(commentsId);
+    if (!comment) return false;
     if (status === 'Like') {
-        comment.likesCount++
+      comment.likesCount++;
     }
     if (status === 'Dislike') {
-        comment.dislikesCount++
+      comment.dislikesCount++;
     }
-    await comment.save()
-    return true
-}
+    await comment.save();
+    return true;
+  }
 
-async increaseCommentsLikes(commentsId: string){
+  async increaseCommentsLikes(commentsId: string) {
     if (!Types.ObjectId.isValid(commentsId)) {
-        return false
+      return false;
     }
-    let comment = await this.commentModel.findById(commentsId)
-    if (!comment) return false
-    comment.likesCount += 1
-    const result = await comment.save()
-    return !!result
-}
+    const comment = await this.commentModel.findById(commentsId);
+    if (!comment) return false;
+    comment.likesCount += 1;
+    const result = await comment.save();
+    return !!result;
+  }
 
-async decreaseCommentsLikes(commentsId: string){
+  async decreaseCommentsLikes(commentsId: string) {
     if (!Types.ObjectId.isValid(commentsId)) {
-        return false
+      return false;
     }
-    let comment = await this.commentModel.findById(commentsId)
-    if (!comment) return false
-    comment.likesCount -= 1
-    const result = await comment.save()
-    return !!result
-}
+    const comment = await this.commentModel.findById(commentsId);
+    if (!comment) return false;
+    comment.likesCount -= 1;
+    const result = await comment.save();
+    return !!result;
+  }
 
-async increaseCommentsDislikes(commentsId: string){
+  async increaseCommentsDislikes(commentsId: string) {
     if (!Types.ObjectId.isValid(commentsId)) {
-        return false
+      return false;
     }
-    let comment = await this.commentModel.findById(commentsId)
-    if (!comment) return false
-    comment.dislikesCount += 1
-    const result = await comment.save()
-    return !!result
-}
+    const comment = await this.commentModel.findById(commentsId);
+    if (!comment) return false;
+    comment.dislikesCount += 1;
+    const result = await comment.save();
+    return !!result;
+  }
 
-async decreaseCommentsDislikes(commentsId: string){
+  async decreaseCommentsDislikes(commentsId: string) {
     if (!Types.ObjectId.isValid(commentsId)) {
-        return false
+      return false;
     }
-    let comment = await this.commentModel.findById(commentsId)
-    if (!comment) return false
-    comment.dislikesCount -= 1
-    const result = await comment.save()
-    return !!result
-}
+    const comment = await this.commentModel.findById(commentsId);
+    if (!comment) return false;
+    comment.dislikesCount -= 1;
+    const result = await comment.save();
+    return !!result;
+  }
 }

@@ -21,7 +21,7 @@ import {
   RequestBlogsQueryModel,
   DEFAULT_QUERY_PARAMS,
 } from '../models/types';
-import { Length, IsString, IsUrl } from 'class-validator';
+import { Length, IsString, IsUrl, IsNotEmpty, Validate } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
 import { PostsService } from '../posts/posts.service';
 import { PostsQueryRepository } from '../posts/posts.query.repository';
@@ -33,21 +33,35 @@ import {
 } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CustomUrlValidator } from '../middlewares/validators';
 
 export class CreateBlogInputModelType {
+  @IsNotEmpty()
   @IsString()
   @Length(1, 15)
   name: string;
+  @IsNotEmpty()
   @IsString()
   @Length(1, 500)
   description: string;
+  @IsNotEmpty()
   @IsUrl()
+  @Validate(CustomUrlValidator)
   websiteUrl: string;
 }
 
 export class UpdateBlogInputModelType {
+  @IsNotEmpty()
+  @IsString()
+  @Length(1, 15)
   name: string;
+  @IsNotEmpty()
+  @IsString()
+  @Length(1, 500)
   description: string;
+  @IsNotEmpty()
+  @IsUrl()
+  @Validate(CustomUrlValidator)
   websiteUrl: string;
 }
 
@@ -78,9 +92,10 @@ export class BlogsController {
   async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
     const newBlogsId = await this.blogsService.createBlog(blogCreateInputModel);
     const newBlog = await this.blogsQueryRepository.getBlogById(newBlogsId);
-    if(!newBlog){
-      throw new UnableException('blog creating')
+    if (!newBlog) {
+      throw new UnableException('blog creating');
     }
+    return newBlog;
   }
   @Get(':id')
   async getBlogById(@Param('id') blogsId: string) {
@@ -102,8 +117,8 @@ export class BlogsController {
       blogsId,
       blogUpdateInputModel,
     );
-    if(!result){
-      throw new UnableException('blog updating')
+    if (!result) {
+      throw new UnableException('blog updating');
     }
   }
   @UseGuards(BasicAuthGuard)
@@ -115,8 +130,8 @@ export class BlogsController {
       throw new BlogNotFoundException();
     }
     const result = await this.blogsService.deleteBlogById(blogId);
-    if(!result){
-      throw new UnableException('blog deleting')
+    if (!result) {
+      throw new UnableException('blog deleting');
     }
   }
 
@@ -134,10 +149,11 @@ export class BlogsController {
     const postCreateModel = { ...inputPostCreateModel, blogId: blogId };
     //check is blog exist in post service
     const createdPostId = await this.postsService.createPost(postCreateModel);
-    const result = await this.postsQueryRepository.getPostById(createdPostId);
-    if(!result){
-      throw new UnableException('post creating')
+    const newPost = await this.postsQueryRepository.getPostById(createdPostId);
+    if (!newPost) {
+      throw new UnableException('post creating');
     }
+    return newPost;
   }
 
   @Get(':id/posts')

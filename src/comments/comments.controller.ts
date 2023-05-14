@@ -13,7 +13,7 @@ import {
 import { CommentsService } from './comments.service';
 import { CommentsQueryRepository } from './comments.query.repository';
 import { CheckService } from '../other.services/check.service';
-import { LikeService } from 'src/other.services/like.service';
+import { LikeService } from '../other.services/like.service';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import {
   BlogNotFoundException,
@@ -65,8 +65,8 @@ export class CommentsControllers {
     const isCommentDeleted = await this.commentsService.deleteCommentById(
       commentId,
     );
-    if (!isCommentDeleted){
-      throw new UnableException('comment deleting')
+    if (!isCommentDeleted) {
+      throw new UnableException('comment deleting');
     }
   }
   @UseGuards(JwtAuthGuard)
@@ -82,24 +82,29 @@ export class CommentsControllers {
       commentId,
       updateDTO.content,
     );
-    if (!isUpdated){
-      throw new UnableException('comment update')
-    } 
+    if (!isUpdated) {
+      throw new UnableException('comment update');
+    }
   }
   @UseGuards(JwtAuthGuard)
-  @Put(':id/like-status') 
-  async setLikeStatusForComment(@Req() request, @Param('id') commentId: string, @Body(new ValidationPipe({ transform: true })) likeStatus: SetLikeStatusForCommentInputModel) {
-    
-        const isCommentExist = await this.checkService.isCommentExist(commentId)
-        if (!isCommentExist) {
-            throw new CustomNotFoundException('comment')
-        }
-        let updateCommentLike = await this.likeService.updateCommentLike(
-            request.userId,
-            commentId,
-            likeStatus.likeStatus)
-        if (!updateCommentLike) {
-            throw new UnableException('set like status')
-        }
-}
+  @Put(':id/like-status')
+  async setLikeStatusForComment(
+    @Req() request,
+    @Param('id') commentId: string,
+    @Body(new ValidationPipe({ transform: true }))
+    likeStatus: SetLikeStatusForCommentInputModel,
+  ) {
+    const isCommentExist = await this.checkService.isCommentExist(commentId);
+    if (!isCommentExist) {
+      throw new CustomNotFoundException('comment');
+    }
+    const updateCommentLike = await this.likeService.updateCommentLike(
+      request.userId,
+      commentId,
+      likeStatus.likeStatus,
+    );
+    if (!updateCommentLike) {
+      throw new UnableException('set like status');
+    }
+  }
 }

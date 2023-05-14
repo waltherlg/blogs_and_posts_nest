@@ -28,42 +28,34 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
-    if (status === 400) {
-      const errorsResponse = {
-        errorsMessages: [],
-      };
-      const responseBody: any = exception.getResponse();
-      console.log(responseBody);
-      if (responseBody.message) {
-        responseBody.message.forEach((m) =>
-          errorsResponse.errorsMessages.push(m),
-        );
-        response.status(status).json(errorsResponse);
-      } else {
-        const errorsMessages: any = exception.getResponse();
-        console.log(errorsMessages);
-        response.status(status).json({ errorsMessages });
-      }
-    } else {
-      const errorsMessages: any = exception.getResponse();
-      console.log(errorsMessages);
-      response.status(status).json({ errorsMessages });
-      // const match = responseBody.match(/^\w+/);
-      // const field = match ? match[0] : 'unknown';
-      // response.status(status).json({
-      //   errors: [
-      //     {
-      //       message: responseBody,
-      //       field: field,
-      //     },
-      //   ],
-      // });
-      // тело реквеста, как оно было
-      // response.status(status).json({
+
+    const errors: any = exception.getResponse();
+    console.log(errors);
+    let errorMessages;
+
+    if (Array.isArray(errors.message)) {
+      errorMessages = errors.message;
+    } else if (typeof errors.message === 'string') {
+      errorMessages = [
+        {
+          message: errors.message,
+          field: errors.error,
+        },
+      ];
+      // errorMessages = {
       //   statusCode: status,
       //   timestamp: new Date().toISOString(),
       //   path: request.url,
-      // });
+      // };
+    } else {
+      errorMessages = {
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      };
     }
+    response.status(status).json({
+      errorMessages,
+    });
   }
 }

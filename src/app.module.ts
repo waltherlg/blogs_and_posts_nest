@@ -49,7 +49,11 @@ import { CommentsQueryRepository } from './comments/comments.query.repository';
 import { CommentsService } from './comments/comments.service';
 import { CommentsControllers } from './comments/comments.controller';
 import { LikeService } from './other.services/like.service';
-import { LikeStatusValidator } from './middlewares/validators';
+import {
+  CustomUrlValidator,
+  LikeStatusValidator,
+} from './middlewares/validators';
+import { TestRepository } from './all.data/test.repository';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -124,6 +128,7 @@ if (!emailUser || !emailPassword) {
     DTOFactory,
     EmailManager,
     EmailAdapter,
+    TestRepository,
     BlogsRepository,
     BlogsQueryRepository,
     PostsRepository,
@@ -138,6 +143,7 @@ if (!emailUser || !emailPassword) {
     RefreshTokenStrategy,
     AnonymousStrategy,
     LikeStatusValidator,
+    CustomUrlValidator,
   ],
   exports: [AuthService],
 })

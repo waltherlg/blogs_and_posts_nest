@@ -1,13 +1,15 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class UnableException extends HttpException {
-  constructor(field: string, message?:string) {
-    super(messageConstructor(field, message || 'Unable to complete a query during a ' + field + ' operation'), 418);
-  }
-}
-export class CustomisableException extends HttpException {
-  constructor(field: string, message: string, status: number) {
-    super(messageConstructor(field, message), status);
+  constructor(field: string, errorMessage?: string) {
+    super(
+      messageConstructor(
+        field,
+        errorMessage ||
+          'Unable to complete a query during a ' + field + ' operation',
+      ),
+      418,
+    );
   }
 }
 
@@ -45,12 +47,17 @@ export class LoginAlreadyExistException extends HttpException {
     super(messageConstructor('login', 'login already exist'), 400);
   }
 }
-
-function messageConstructor(field: string, message: string) {
-  return [
+export class CustomisableException extends HttpException {
+  constructor(field: string, errorMessage: string, status: number) {
+    super(messageConstructor(field, errorMessage), status);
+  }
+}
+function messageConstructor(field: string, errorMessage: string) {
+  const message = [
     {
-      message: message,
+      message: errorMessage,
       field: field,
     },
   ];
+  return { message };
 }

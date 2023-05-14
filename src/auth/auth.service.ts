@@ -123,10 +123,6 @@ export class AuthService {
     return await this.usersRepository.saveUser(user);
   }
 
-  async validateUserByAccessToken(payload) {
-    return await this.getUserIdFromToken(payload);
-  }
-
   async login(userId: string, ip: string, userAgent: string) {
     const deviceId = new Types.ObjectId();
     const { accessToken, refreshToken } = await this.createTokens(
