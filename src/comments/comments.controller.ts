@@ -23,7 +23,8 @@ import {
 } from '../exceptions/custom.exceptions';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { th } from 'date-fns/locale';
-import { IsString, Length } from 'class-validator';
+import { IsString, Length, Validate } from 'class-validator';
+import { LikeStatusValidator } from '../middlewares/validators';
 
 export class UpdateCommentInputModelType {
   @IsString()
@@ -32,6 +33,7 @@ export class UpdateCommentInputModelType {
 }
 export class SetLikeStatusForCommentInputModel {
   @IsString()
+  @Validate(LikeStatusValidator)
   likeStatus: string;
 }
 
@@ -99,7 +101,7 @@ export class CommentsControllers {
       throw new CustomNotFoundException('comment');
     }
     const updateCommentLike = await this.likeService.updateCommentLike(
-      request.userId,
+      request.user,
       commentId,
       likeStatus.likeStatus,
     );
