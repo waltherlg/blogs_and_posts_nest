@@ -33,7 +33,7 @@ import {
 } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CustomUrlValidator } from '../middlewares/validators';
+import { CustomUrlValidator, IsCustomUrl } from '../middlewares/validators';
 
 export class CreateBlogInputModelType {
   @IsNotEmpty()
@@ -45,8 +45,7 @@ export class CreateBlogInputModelType {
   @Length(1, 500)
   description: string;
   @IsNotEmpty()
-  @IsUrl()
-  @Validate(CustomUrlValidator)
+  @IsCustomUrl({ message: 'Invalid URL format' })
   websiteUrl: string;
 }
 
@@ -60,8 +59,7 @@ export class UpdateBlogInputModelType {
   @Length(1, 500)
   description: string;
   @IsNotEmpty()
-  @IsUrl()
-  @Validate(CustomUrlValidator)
+  @IsCustomUrl({ message: 'Invalid URL format' })
   websiteUrl: string;
 }
 

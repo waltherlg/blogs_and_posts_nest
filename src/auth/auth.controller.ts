@@ -81,8 +81,8 @@ export class AuthController {
       userCreateInputModel,
     );
     const user = await this.usersQueryRepository.getUserById(newUsersId);
-    if(!user){
-      throw new UnableException('registration')
+    if (!user) {
+      throw new UnableException('registration');
     }
     return user;
   }
@@ -104,13 +104,11 @@ export class AuthController {
     );
     if (!result) {
       throw new CustomisableException(
-      'email',
-      'the application failed to send an email',
-      400
+        'email',
+        'the application failed to send an email',
+        400,
       );
     }
-
-    
   }
   @Post('registration-confirmation')
   @HttpCode(204)
@@ -137,10 +135,12 @@ export class AuthController {
   //current user info
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async currentUserInfo(@Req()request){
-    const currentUserInfo = await this.usersService.currentUserInfo(request.user)
-    if(!currentUserInfo){
-      throw new UnableException('get current user info')
+  async currentUserInfo(@Req() request) {
+    const currentUserInfo = await this.usersService.currentUserInfo(
+      request.user,
+    );
+    if (!currentUserInfo) {
+      throw new UnableException('get current user info');
     }
     return currentUserInfo;
   }
@@ -159,8 +159,6 @@ export class AuthController {
       .send({ accessToken });
   }
 
-  
-
   @Post('password-recovery')
   @HttpCode(204)
   async passwordRecovery(@Body() email: PasswordRecoveryEmailInput) {
@@ -168,8 +166,8 @@ export class AuthController {
       throw new CustomNotFoundException('email');
     }
     const result = await this.authService.passwordRecovery(email.email);
-    if(!result){
-      throw new UnableException('password recovery')
+    if (!result) {
+      throw new UnableException('password recovery');
     }
   }
 
@@ -189,8 +187,8 @@ export class AuthController {
     }
     const result = await this.authService.newPasswordSet(newPasswordDTO);
     if (!result) {
-      throw new UnableException('password change')
-    } 
+      throw new UnableException('password change');
+    }
   }
   @UseGuards(RefreshTokenGuard)
   @Post('logout')
@@ -207,6 +205,5 @@ export class AuthController {
     } else {
       throw new CustomisableException('logout', 'logout error', 400);
     }
-  
   }
 }

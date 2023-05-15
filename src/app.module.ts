@@ -54,6 +54,7 @@ import {
   LikeStatusValidator,
 } from './middlewares/validators';
 import { TestRepository } from './all.data/test.repository';
+import { ConfigModule } from '@nestjs/config';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -79,6 +80,7 @@ if (!emailUser || !emailPassword) {
         },
       },
     }),
+    ConfigModule.forRoot(),
     MongooseModule.forRoot(mongoUri, { dbName: 'blogsAndPosts' }),
     MongooseModule.forFeature([
       {

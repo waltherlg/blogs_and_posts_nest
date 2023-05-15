@@ -3,6 +3,9 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
   ValidationArguments,
+  isURL,
+  ValidationOptions,
+  registerDecorator,
 } from 'class-validator';
 import { CustomisableException } from '../exceptions/custom.exceptions';
 
@@ -39,31 +42,39 @@ export class LikeStatusValidator implements ValidatorConstraintInterface {
   }
 }
 
-@Injectable()
 @ValidatorConstraint({ name: 'customUrl', async: false })
 export class CustomUrlValidator implements ValidatorConstraintInterface {
   private readonly urlRegex =
     /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
 
   validate(value: any, args: ValidationArguments) {
-    if (!value || typeof value !== 'string') {
-      throw new BadRequestException({
-        message: 'URL is required',
-        field: args.property,
-      });
+    // Проверка с использованием декоратора @IsUrl()
+    const isUrlValid = isURL(value, {
+      require_protocol: true,
+      protocols: ['http', 'https'],
+    });
+
+    if (!isUrlValid) {
+      return false;
     }
 
-    if (!this.urlRegex.test(value)) {
-      throw new BadRequestException({
-        message: 'Invalid URL format',
-        field: args.property,
-      });
-    }
-
-    return true;
+    // Дополнительная проверка по паттерну
+    return this.urlRegex.test(value);
   }
 
   defaultMessage(args: ValidationArguments) {
     return `${args.property} must be a valid URL`;
   }
+}
+
+export function IsCustomUrl(validationOptions?: ValidationOptions) {
+  return function (object: Record<string, any>, propertyName: string) {
+    registerDecorator({
+      name: 'isCustomUrl',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: CustomUrlValidator,
+    });
+  };
 }
