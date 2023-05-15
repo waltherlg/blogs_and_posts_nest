@@ -82,6 +82,7 @@ export class LikeService {
     const userPostStatus = postsLikesCollection.find(
       (post) => post.userId === userId,
     );
+    console.log('userPostStatus ', userPostStatus);
     if (!userPostStatus) {
       const createdAt = new Date();
       const newLike = {
@@ -95,6 +96,7 @@ export class LikeService {
       return result;
     }
     userPostStatus.status = status;
+    console.log('userPostStatus ', userPostStatus);
     const result = await this.postsRepository.savePost(post);
     return result;
   }

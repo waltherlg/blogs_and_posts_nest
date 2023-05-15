@@ -186,10 +186,10 @@ export class PostController {
     );
   }
   @UseGuards(JwtAuthGuard)
-  @Put(':postId/like-status')
+  @Put(':id/like-status')
   async setLikeStatusForPost(
     @Req() request,
-    @Param('postId') postId: string,
+    @Param('id') postId: string,
     @Body()
     likeStatus: SetLikeStatusForPostInputModel,
   ) {
