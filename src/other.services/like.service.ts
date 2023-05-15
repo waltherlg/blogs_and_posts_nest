@@ -101,6 +101,7 @@ export class LikeService {
       return result;
     }
     post.likesCollection[userPostIndex].status = status;
+    post.markModified('likesCollection');
     console.log(
       'post.likesCollection[userPostIndex] ',
       post.likesCollection[userPostIndex],
