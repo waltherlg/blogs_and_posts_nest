@@ -81,13 +81,16 @@ export class LikeService {
       postsId,
     );
     if (!post) return false;
-    const userPostIndex = post.likesCollection.findIndex(
+    // const userPostIndex = post.likesCollection.findIndex(
+    //   (post) => post.userId === userId,
+    // );
+    // console.log('userPostIndex ', userPostIndex);
+    // const userPostStatus =
+    //   userPostIndex !== -1 ? post.likesCollection[userPostIndex] : null;
+    // console.log('userPostStatus ', userPostStatus);
+    const userPostStatus = post.likesCollection.find(
       (post) => post.userId === userId,
     );
-    console.log('userPostIndex ', userPostIndex);
-    const userPostStatus =
-      userPostIndex !== -1 ? post.likesCollection[userPostIndex] : null;
-    console.log('userPostStatus ', userPostStatus);
     if (!userPostStatus) {
       const createdAt = new Date();
       const newLike = {
@@ -100,12 +103,13 @@ export class LikeService {
       const result = await this.postsRepository.savePost(post);
       return result;
     }
-    post.likesCollection[userPostIndex].status = status;
+    //post.likesCollection[userPostIndex].status = status;
+    userPostStatus.status = status;
     post.markModified('likesCollection');
-    console.log(
-      'post.likesCollection[userPostIndex] ',
-      post.likesCollection[userPostIndex],
-    );
+    // console.log(
+    //   'post.likesCollection[userPostIndex] ',
+    //   post.likesCollection[userPostIndex],
+    // );
     const result = await this.postsRepository.savePost(post);
     return result;
   }
