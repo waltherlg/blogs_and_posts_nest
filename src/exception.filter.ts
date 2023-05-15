@@ -31,31 +31,31 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const errors: any = exception.getResponse();
     console.log(errors);
-    let errorMessages;
+    let errorsMessages;
 
     if (Array.isArray(errors.message)) {
-      errorMessages = errors.message;
+      errorsMessages = { errorsMessages: errors.message };
     } else if (typeof errors.message === 'string') {
-      errorMessages = [
-        {
-          message: errors.message,
-          field: errors.error,
-        },
-      ];
+      errorsMessages = {
+        errorsMessages: [
+          {
+            message: errors.message,
+            field: errors.field || errors.error,
+          },
+        ],
+      };
       // errorMessages = {
       //   statusCode: status,
       //   timestamp: new Date().toISOString(),
       //   path: request.url,
       // };
     } else {
-      errorMessages = {
+      errorsMessages = {
         statusCode: status,
         timestamp: new Date().toISOString(),
         path: request.url,
       };
     }
-    response.status(status).json({
-      errorMessages,
-    });
+    response.status(status).send(errorsMessages);
   }
 }
