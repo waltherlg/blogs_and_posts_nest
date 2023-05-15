@@ -2,6 +2,7 @@ import { CommentsRepository } from '../comments/comments.repository';
 import { UsersRepository } from '../users/users.repository';
 import { PostsRepository } from '../posts/posts.repository';
 import { Injectable } from '@nestjs/common/decorators';
+import { PostDocument } from '../posts/posts.types';
 
 @Injectable()
 export class LikeService {
@@ -76,12 +77,16 @@ export class LikeService {
   ): Promise<boolean> {
     const user = await this.usersRepository.getUserDBTypeById(userId);
     if (!user) return false;
-    const post = await this.postsRepository.getPostDBTypeById(postsId);
+    const post: PostDocument = await this.postsRepository.getPostDBTypeById(
+      postsId,
+    );
     if (!post) return false;
-    const postsLikesCollection = post.likesCollection;
-    const userPostStatus = postsLikesCollection.find(
+    const userPostIndex = post.likesCollection.findIndex(
       (post) => post.userId === userId,
     );
+    console.log('userPostIndex ', userPostIndex);
+    const userPostStatus =
+      userPostIndex !== -1 ? post.likesCollection[userPostIndex] : null;
     console.log('userPostStatus ', userPostStatus);
     if (!userPostStatus) {
       const createdAt = new Date();
@@ -95,8 +100,11 @@ export class LikeService {
       const result = await this.postsRepository.savePost(post);
       return result;
     }
-    userPostStatus.status = status;
-    console.log('userPostStatus ', userPostStatus);
+    post.likesCollection[userPostIndex].status = status;
+    console.log(
+      'post.likesCollection[userPostIndex] ',
+      post.likesCollection[userPostIndex],
+    );
     const result = await this.postsRepository.savePost(post);
     return result;
   }

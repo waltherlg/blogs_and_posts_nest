@@ -8,6 +8,7 @@ export class PostsRepository {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
   async savePost(post: PostDocument) {
+    console.log('post ', post);
     const result = await post.save();
     return !!result;
   }
@@ -29,7 +30,7 @@ export class PostsRepository {
     if (!Types.ObjectId.isValid(postId)) {
       return null;
     }
-    const post = await this.postModel.findById(postId);
+    const post: PostDocument = await this.postModel.findById(postId);
     if (!post) {
       return null;
     }
