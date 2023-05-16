@@ -65,7 +65,7 @@ export class CustomUrlValidator implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments) {
-    return `${args.property} must be a valid URL`;
+    return `must be a valid URL`;
   }
 }
 
@@ -90,18 +90,14 @@ export class CustomBlogIdValidator implements ValidatorConstraintInterface {
     const isBlogIdString = isString(blogId);
 
     if (!isBlogIdString) {
-      return false;
-    }
-    console.log('value ', blogId);
-    const result = await this.checkService.isBlogExist(blogId.toString());
-    console.log('result in validator ', result);
-    if (result === true) {
       return true;
-    } else return false;
+    }
+
+    return await this.checkService.isBlogExist(blogId.toString());
   }
 
   defaultMessage(args: ValidationArguments) {
-    return `${args.property} must be existing blog`;
+    return `must be existing blog`;
   }
 }
 

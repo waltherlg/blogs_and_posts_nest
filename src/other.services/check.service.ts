@@ -65,4 +65,12 @@ export class CheckService {
     );
     return !!isExist;
   }
+  async isUserOwnerOfComment(userId, commentId): Promise<boolean> {
+    const comment = await this.commentsRepository.getCommentDbTypeById(
+      commentId,
+    );
+    if (!comment || comment.userId !== userId) {
+      return false;
+    } else return true;
+  }
 }

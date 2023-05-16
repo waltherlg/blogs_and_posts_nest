@@ -60,9 +60,18 @@ export class CommentsControllers {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @HttpCode(204)
-  async deleteCommentById(@Param('id') commentId: string) {
+  async deleteCommentById(@Req() request, @Param('id') commentId: string) {
     if (!(await this.checkService.isCommentExist(commentId))) {
       throw new CustomNotFoundException('comment');
+    }
+    if (
+      !(await this.checkService.isUserOwnerOfComment(request.user, commentId))
+    ) {
+      throw new CustomisableException(
+        'user is not owner',
+        'cannot delete comments if you are not owner',
+        403,
+      );
     }
     const isCommentDeleted = await this.commentsService.deleteCommentById(
       commentId,
@@ -73,6 +82,7 @@ export class CommentsControllers {
   }
   @UseGuards(JwtAuthGuard)
   @Put(':id')
+  @HttpCode(204)
   async updateCommentById(
     @Param('id') commentId: string,
     @Body() updateDTO: UpdateCommentInputModelType,
@@ -90,6 +100,7 @@ export class CommentsControllers {
   }
   @UseGuards(JwtAuthGuard)
   @Put(':id/like-status')
+  @HttpCode(204)
   async setLikeStatusForComment(
     @Req() request,
     @Param('id') commentId: string,
