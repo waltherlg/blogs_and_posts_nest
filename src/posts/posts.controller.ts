@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { AppService } from '../app.service';
 import { RequestQueryParamsModel, DEFAULT_QUERY_PARAMS } from '../models/types';
-import { Length, IsString, IsUrl, Validate } from 'class-validator';
+import { Length, IsString, IsUrl, Validate, IsNotEmpty } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
 import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
@@ -39,39 +39,49 @@ import {
 
 export class CreatePostInputModelType {
   @IsString()
+  @IsNotEmpty()
   @Length(1, 30)
   title: string;
   @IsString()
+  @IsNotEmpty()
   @Length(1, 100)
   shortDescription: string;
   @IsString()
+  @IsNotEmpty()
   @Length(1, 1000)
   content: string;
   @IsString()
+  @IsNotEmpty()
   @BlogIdCustomValidator()
   blogId: string;
 }
 
 export class UpdatePostInputModelType {
   @IsString()
+  @IsNotEmpty()
   @Length(1, 30)
   title: string;
   @IsString()
+  @IsNotEmpty()
   @Length(1, 100)
   shortDescription: string;
   @IsString()
+  @IsNotEmpty()
   @Length(1, 1000)
   content: string;
-  @IsString()
+  @IsNotEmpty()
   @Length(1, 100)
+  @BlogIdCustomValidator()
   blogId: string;
 }
 export class CreateCommentInputModelType {
   @IsString()
+  @IsNotEmpty()
   @Length(20, 300)
   content: string;
 }
 export class SetLikeStatusForPostInputModel {
+  @IsNotEmpty()
   @IsString()
   @Validate(LikeStatusValidator)
   likeStatus: string;
