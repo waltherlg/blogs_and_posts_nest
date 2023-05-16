@@ -18,7 +18,7 @@ export class PostsService {
       postCreateInputModel.blogId,
     );
     if (!blog) {
-      throw new BlogNotFoundException();
+      //throw new BlogNotFoundException();
     }
     const postDTO = new PostDBType(
       new Types.ObjectId(),
@@ -26,7 +26,7 @@ export class PostsService {
       postCreateInputModel.shortDescription,
       postCreateInputModel.content,
       postCreateInputModel.blogId,
-      blog.name,
+      blog.name || 'uk',
       new Date().toISOString(),
       0,
       0,

@@ -81,20 +81,23 @@ export function IsCustomUrl(validationOptions?: ValidationOptions) {
   };
 }
 @Injectable()
-@ValidatorConstraint({ name: 'BlogIdCustomValidator', async: true })
+@ValidatorConstraint({ name: 'BlogId', async: true })
 export class CustomBlogIdValidator implements ValidatorConstraintInterface {
   constructor(private readonly checkService: CheckService) {}
 
-  async validate(value: any, args: ValidationArguments) {
+  async validate(blogId: any, args: ValidationArguments) {
     // Проверка с использованием декоратора @IsString
-    const isBlogIdString = isString(value);
+    const isBlogIdString = isString(blogId);
 
     if (!isBlogIdString) {
       return false;
     }
-    console.log('value ', value);
-    // Дополнительная проверка по паттерну
-    return await this.checkService.isBlogExist(value);
+    console.log('value ', blogId);
+    const result = await this.checkService.isBlogExist(blogId.toString());
+    console.log('result in validator ', result);
+    if (result === true) {
+      return true;
+    } else return false;
   }
 
   defaultMessage(args: ValidationArguments) {
@@ -105,10 +108,11 @@ export class CustomBlogIdValidator implements ValidatorConstraintInterface {
 export function BlogIdCustomValidator(validationOptions?: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
-      name: 'IsBlogIdExist',
+      name: 'BlogIdCustomValidator',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
+      constraints: [],
       validator: CustomBlogIdValidator,
     });
   };

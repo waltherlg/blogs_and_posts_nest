@@ -47,6 +47,7 @@ export class CreatePostInputModelType {
   @IsString()
   @Length(1, 1000)
   content: string;
+  @IsString()
   @BlogIdCustomValidator()
   blogId: string;
 }
