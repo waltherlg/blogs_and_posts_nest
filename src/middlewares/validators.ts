@@ -6,8 +6,10 @@ import {
   isURL,
   ValidationOptions,
   registerDecorator,
+  isString,
 } from 'class-validator';
 import { CustomisableException } from '../exceptions/custom.exceptions';
+import { CheckService } from '../other.services/check.service';
 
 @Injectable()
 @ValidatorConstraint({ name: 'likeStatus', async: false })
@@ -75,6 +77,39 @@ export function IsCustomUrl(validationOptions?: ValidationOptions) {
       propertyName: propertyName,
       options: validationOptions,
       validator: CustomUrlValidator,
+    });
+  };
+}
+
+@ValidatorConstraint({ name: 'BlogIdCustomValidator', async: true })
+export class CustomBlogIdValidator implements ValidatorConstraintInterface {
+  constructor(private readonly checkService: CheckService) {}
+
+  async validate(value: any, args: ValidationArguments) {
+    // Проверка с использованием декоратора @IsString
+    const isBlogIdString = isString(value);
+
+    if (!isBlogIdString) {
+      return false;
+    }
+
+    // Дополнительная проверка по паттерну
+    return await this.checkService.isBlogExist(value);
+  }
+
+  defaultMessage(args: ValidationArguments) {
+    return `${args.property} must be existing blog`;
+  }
+}
+
+export function BlogIdCustomValidator(validationOptions?: ValidationOptions) {
+  return function (object: Record<string, any>, propertyName: string) {
+    registerDecorator({
+      name: 'IsBlogIdExist',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: CustomBlogIdValidator,
     });
   };
 }

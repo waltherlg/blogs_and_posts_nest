@@ -32,7 +32,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CommentsService } from '../comments/comments.service';
 import { CommentsQueryRepository } from '../comments/comments.query.repository';
 import { LikeService } from '../other.services/like.service';
-import { LikeStatusValidator } from '../middlewares/validators';
+import {
+  BlogIdCustomValidator,
+  LikeStatusValidator,
+} from '../middlewares/validators';
 
 export class CreatePostInputModelType {
   @IsString()
@@ -44,8 +47,7 @@ export class CreatePostInputModelType {
   @IsString()
   @Length(1, 1000)
   content: string;
-  @IsString()
-  @Length(1, 100)
+  @BlogIdCustomValidator()
   blogId: string;
 }
 
@@ -97,8 +99,11 @@ export class PostController {
   }
   @UseGuards(OptionalJwtAuthGuard)
   @Get(':id')
-  async getPostById(@Param('id') postId: string) {
-    const post = await this.postsQueryRepository.getPostById(postId);
+  async getPostById(@Req() request, @Param('id') postId: string) {
+    const post = await this.postsQueryRepository.getPostById(
+      postId,
+      request.user,
+    );
     if (!post) {
       throw new PostNotFoundException();
     }
