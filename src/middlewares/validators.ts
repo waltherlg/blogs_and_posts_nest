@@ -43,7 +43,7 @@ export class LikeStatusValidator implements ValidatorConstraintInterface {
     return 'Invalid likeStatus';
   }
 }
-
+@Injectable()
 @ValidatorConstraint({ name: 'customUrl', async: false })
 export class CustomUrlValidator implements ValidatorConstraintInterface {
   private readonly urlRegex =
@@ -80,7 +80,7 @@ export function IsCustomUrl(validationOptions?: ValidationOptions) {
     });
   };
 }
-
+@Injectable()
 @ValidatorConstraint({ name: 'BlogIdCustomValidator', async: true })
 export class CustomBlogIdValidator implements ValidatorConstraintInterface {
   constructor(private readonly checkService: CheckService) {}
@@ -92,7 +92,7 @@ export class CustomBlogIdValidator implements ValidatorConstraintInterface {
     if (!isBlogIdString) {
       return false;
     }
-
+    console.log('value ', value);
     // Дополнительная проверка по паттерну
     return await this.checkService.isBlogExist(value);
   }

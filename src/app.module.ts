@@ -50,6 +50,7 @@ import { CommentsService } from './comments/comments.service';
 import { CommentsControllers } from './comments/comments.controller';
 import { LikeService } from './other.services/like.service';
 import {
+  CustomBlogIdValidator,
   CustomUrlValidator,
   LikeStatusValidator,
 } from './middlewares/validators';
@@ -146,6 +147,7 @@ if (!emailUser || !emailPassword) {
     AnonymousStrategy,
     LikeStatusValidator,
     CustomUrlValidator,
+    CustomBlogIdValidator,
   ],
   exports: [AuthService],
 })
