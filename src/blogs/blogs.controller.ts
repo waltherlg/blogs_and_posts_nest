@@ -34,14 +34,18 @@ import {
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CustomUrlValidator, IsCustomUrl } from '../middlewares/validators';
+import { Transform } from 'class-transformer';
+import { Trim } from '../middlewares/transformators';
 
 export class CreateBlogInputModelType {
-  @IsNotEmpty()
   @IsString()
+  @Trim()
+  @IsNotEmpty()
   @Length(1, 15)
   name: string;
-  @IsNotEmpty()
   @IsString()
+  @Trim()
+  @IsNotEmpty()
   @Length(1, 500)
   description: string;
   @IsNotEmpty()
