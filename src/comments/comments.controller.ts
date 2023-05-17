@@ -93,11 +93,21 @@ export class CommentsControllers {
   @Put(':id')
   @HttpCode(204)
   async updateCommentById(
+    @Req() request,
     @Param('id') commentId: string,
     @Body() updateDTO: UpdateCommentInputModelType,
   ) {
     if (!(await this.checkService.isCommentExist(commentId))) {
       throw new CustomNotFoundException('comment');
+    }
+    if (
+      !(await this.checkService.isUserOwnerOfComment(request.user, commentId))
+    ) {
+      throw new CustomisableException(
+        'user is not owner',
+        'cannot delete comments if you are not owner',
+        403,
+      );
     }
     const isUpdated = await this.commentsService.updateCommentById(
       commentId,

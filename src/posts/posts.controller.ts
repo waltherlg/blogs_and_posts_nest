@@ -158,7 +158,6 @@ export class PostController {
     @Query() queryParams: RequestQueryParamsModel,
   ) {
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
-    console.log('request.user ', request.user);
     return await this.postsQueryRepository.getAllPosts(
       mergedQueryParams,
       request.user,
@@ -194,8 +193,11 @@ export class PostController {
     @Param('id') postId: string,
     @Query() queryParams: RequestQueryParamsModel,
   ) {
+    if (!(await this.checkService.isPostExist(postId))) {
+      throw new CustomNotFoundException('post');
+    }
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
-    console.log('request.user ', request.user);
+    console.log('mergedQueryParams ', mergedQueryParams);
     return await this.commentsQueryRepository.getAllCommentsByPostId(
       postId,
       mergedQueryParams,

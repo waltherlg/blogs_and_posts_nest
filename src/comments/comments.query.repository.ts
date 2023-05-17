@@ -37,49 +37,52 @@ export class CommentsQueryRepository {
     }
     return comment.prepareCommentForOutput();
   }
-  async getAllCommentsByPostId(postId: string, mergedQueryParams, userId?: string){
+  async getAllCommentsByPostId(postId: string, mergedQueryParams, userId?) {
+    const commentsCount = await this.commentModel.countDocuments({
+      $and: [{ parentType: 'post' }, { parentId: postId }],
+    });
+    console.log(postId, mergedQueryParams, userId);
+    const sortBy = mergedQueryParams.sortBy;
+    const sortDirection = mergedQueryParams.sortDirection;
+    const pageNumber = mergedQueryParams.pageNumber;
+    const pageSize = mergedQueryParams.pageSize;
 
+    const comments = await this.commentModel
+      .find({ $and: [{ parentType: 'post' }, { parentId: postId }] })
+      .sort({ [sortBy]: this.sortByDesc(sortDirection) })
+      .skip(this.skipPage(pageNumber, pageSize))
+      .limit(+pageSize);
 
-    const commentsCount = await this.commentModel.countDocuments({$and: [{parentType: "post"}, {parentId: postId}]})
-    const sortBy = mergedQueryParams.sortBy
-    const sortDirection = mergedQueryParams.sortDirection
-    const pageNumber = mergedQueryParams.pageNumber
-    const pageSize = mergedQueryParams.pageSize
-
-    let comments  = await this.commentModel.find({$and: [{parentType: "post"}, {parentId: postId}]})
-        .sort({[sortBy]: this.sortByDesc(sortDirection)})
-        .skip(this.skipPage(pageNumber, pageSize))
-        .limit(+pageSize)
-
-    let likedComment: Array<CommentsLikeType> = []
-    const user: UserDocument | null = await this.userModel.findOne({_id: new Types.ObjectId(userId)})
-    if (user){
-        likedComment = user.likedComments
+    let likedComment: Array<CommentsLikeType> = [];
+    if (Types.ObjectId.isValid(userId)) {
+      const user: UserDocument | null = await this.userModel.findOne({
+        _id: new Types.ObjectId(userId),
+      });
+      if (user) {
+        likedComment = user.likedComments;
+      }
     }
 
-    let outComments = comments.map((comment: CommentDocument) => {
+    const outComments = comments.map((comment: CommentDocument) => {
+      const currentCommentId = comment._id.toString();
+      const isUserLikeIt = likedComment.find(
+        (e) => e.commentsId === currentCommentId,
+      );
+      if (isUserLikeIt) {
+        comment.myStatus = isUserLikeIt.status;
+      }
+      return comment.prepareCommentForOutput();
+    });
+    const pageCount = Math.ceil(commentsCount / +pageSize);
 
-        // let myStatus = 'None'
-
-        let currentCommentId = comment._id.toString()
-        let isUserLikeIt = likedComment.find(e => e.commentsId === currentCommentId)
-        if (isUserLikeIt){
-            comment.myStatus = isUserLikeIt.status
-        }
-
-        return comment.prepareCommentForOutput
-    })
-
-    let pageCount = Math.ceil(commentsCount / +pageSize)
-
-    let outputComments = {
-        pagesCount: pageCount,
-        page: +pageNumber,
-        pageSize: +pageSize,
-        totalCount: commentsCount,
-        items: outComments
-    }
-    return outputComments
+    const outputComments = {
+      pagesCount: pageCount,
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: commentsCount,
+      items: outComments,
+    };
+    return outputComments;
   }
   sortByDesc(sortDirection: string) {
     return sortDirection === 'desc' ? -1 : 1;
