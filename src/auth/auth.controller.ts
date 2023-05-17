@@ -2,11 +2,8 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import {
   Body,
-  ConflictException,
   Controller,
   HttpCode,
-  HttpStatus,
-  Injectable,
   Post,
   Get,
   Req,
@@ -23,40 +20,39 @@ import {
   LoginAlreadyExistException,
   UnableException,
 } from '../exceptions/custom.exceptions';
-import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import { IsEmail, IsString, Length, Matches, MaxLength } from 'class-validator';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { UserAuthModel } from './auth.types';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { request } from 'express';
+import { StringTrimNotEmpty } from '../middlewares/validators';
 export class RegistrationEmailResendingInput {
-  @IsString()
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   @IsEmail()
-  @Length(1, 100)
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
 
 export class PasswordRecoveryEmailInput {
-  @IsString()
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   @IsEmail()
-  @Length(1, 100)
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
 
 export class RegistrationConfirmationCodeInput {
-  @IsString()
-  @Length(1, 100)
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   code: string;
 }
 
 export class NewPasswordSetInput {
-  @IsString()
+  @StringTrimNotEmpty()
   @Length(6, 20)
   newPassword: string;
-  @IsString()
-  @Length(1, 100)
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   recoveryCode: string;
 }
 

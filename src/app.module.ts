@@ -53,6 +53,7 @@ import {
   CustomBlogIdValidator,
   CustomUrlValidator,
   LikeStatusValidator,
+  TrimNotEmptyValidator,
 } from './middlewares/validators';
 import { TestRepository } from './all.data/test.repository';
 import { ConfigModule } from '@nestjs/config';
@@ -148,6 +149,7 @@ if (!emailUser || !emailPassword) {
     LikeStatusValidator,
     CustomUrlValidator,
     CustomBlogIdValidator,
+    TrimNotEmptyValidator,
   ],
   exports: [AuthService],
 })

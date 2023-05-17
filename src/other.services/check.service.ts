@@ -12,7 +12,6 @@ export class CheckService {
     private readonly commentsRepository: CommentsRepository,
   ) {}
   async isBlogExist(blogId): Promise<boolean> {
-    console.log('blogId in checkService', blogId);
     const blog = await this.blogsRepository.getBlogDBTypeById(blogId);
     return !!blog;
   }

@@ -15,7 +15,14 @@ import {
 } from '@nestjs/common';
 import { AppService } from '../app.service';
 import { RequestQueryParamsModel, DEFAULT_QUERY_PARAMS } from '../models/types';
-import { Length, IsString, IsUrl, Validate, IsNotEmpty } from 'class-validator';
+import {
+  Length,
+  IsString,
+  IsUrl,
+  Validate,
+  IsNotEmpty,
+  MaxLength,
+} from 'class-validator';
 import { CheckService } from '../other.services/check.service';
 import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
@@ -35,54 +42,48 @@ import { LikeService } from '../other.services/like.service';
 import {
   BlogIdCustomValidator,
   LikeStatusValidator,
+  StringTrimNotEmpty,
 } from '../middlewares/validators';
 
 export class CreatePostInputModelType {
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 30)
+  @StringTrimNotEmpty()
+  @MaxLength(30)
   title: string;
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 100)
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   shortDescription: string;
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 1000)
+  @StringTrimNotEmpty()
+  @MaxLength(1000)
   content: string;
-  @IsString()
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
+  @MaxLength(1000)
   @BlogIdCustomValidator()
   blogId: string;
 }
 
 export class UpdatePostInputModelType {
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 30)
+  @StringTrimNotEmpty()
+  @MaxLength(30)
   title: string;
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 100)
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   shortDescription: string;
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 1000)
+  @StringTrimNotEmpty()
+  @MaxLength(1000)
   content: string;
-  @IsNotEmpty()
-  @Length(1, 100)
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   @BlogIdCustomValidator()
   blogId: string;
 }
 export class CreateCommentInputModelType {
-  @IsString()
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
   @Length(20, 300)
   content: string;
 }
 export class SetLikeStatusForPostInputModel {
-  @IsNotEmpty()
-  @IsString()
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   @Validate(LikeStatusValidator)
   likeStatus: string;
 }

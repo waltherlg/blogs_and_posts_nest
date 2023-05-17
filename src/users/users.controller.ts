@@ -10,7 +10,14 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { IsEmail, IsString, Length, Matches, IsNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  Length,
+  Matches,
+  IsNotEmpty,
+  MaxLength,
+} from 'class-validator';
 import { UsersQueryRepository } from './users.query.repository';
 import {
   DEFAULT_QUERY_PARAMS,
@@ -21,18 +28,16 @@ import {
 import { CheckService } from '../other.services/check.service';
 import { UserNotFoundException } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
+import { StringTrimNotEmpty } from '../middlewares/validators';
 export class CreateUserInputModelType {
-  @IsString()
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
   @Length(3, 10)
   @Matches(/^[a-zA-Z0-9_-]*$/)
   login: string;
-  @IsString()
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
   @Length(6, 20)
   password: string;
-  @IsString()
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
   @IsEmail()
   @Length(1, 100)
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)

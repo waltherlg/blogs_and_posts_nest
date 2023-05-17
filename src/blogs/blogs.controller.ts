@@ -4,11 +4,11 @@ import {
   Delete,
   Get,
   HttpCode,
-  NotFoundException,
   Param,
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AppService } from '../app.service';
@@ -21,7 +21,7 @@ import {
   RequestBlogsQueryModel,
   DEFAULT_QUERY_PARAMS,
 } from '../models/types';
-import { Length, IsString, IsUrl, IsNotEmpty, Validate } from 'class-validator';
+import { MaxLength } from 'class-validator';
 import { CheckService } from '../other.services/check.service';
 import { PostsService } from '../posts/posts.service';
 import { PostsQueryRepository } from '../posts/posts.query.repository';
@@ -32,50 +32,43 @@ import {
   UnableException,
 } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CustomUrlValidator, IsCustomUrl } from '../middlewares/validators';
-import { Transform } from 'class-transformer';
-import { Trim } from '../middlewares/transformators';
+import { IsCustomUrl, StringTrimNotEmpty } from '../middlewares/validators';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
+import { request } from 'express';
 
 export class CreateBlogInputModelType {
-  @IsString()
-  @Trim()
-  @IsNotEmpty()
-  @Length(1, 15)
+  @StringTrimNotEmpty()
+  @MaxLength(15)
   name: string;
-  @IsString()
-  @Trim()
-  @IsNotEmpty()
-  @Length(1, 500)
+  @StringTrimNotEmpty()
+  @MaxLength(500)
   description: string;
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
   @IsCustomUrl({ message: 'Invalid URL format' })
   websiteUrl: string;
 }
 
 export class UpdateBlogInputModelType {
-  @IsNotEmpty()
-  @IsString()
-  @Length(1, 15)
+  @StringTrimNotEmpty()
+  @MaxLength(15)
   name: string;
-  @IsNotEmpty()
-  @IsString()
-  @Length(1, 500)
+  @StringTrimNotEmpty()
+  @MaxLength(500)
   description: string;
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
   @IsCustomUrl({ message: 'Invalid URL format' })
   websiteUrl: string;
 }
 
 export class CreatePostByBlogsIdInputModelType {
-  @IsString()
-  @Length(1, 30)
+  @StringTrimNotEmpty()
+  @MaxLength(30)
   title: string;
-  @IsString()
-  @Length(1, 100)
+  @StringTrimNotEmpty()
+  @MaxLength(100)
   shortDescription: string;
-  @IsString()
-  @Length(1, 1000)
+  @StringTrimNotEmpty()
+  @MaxLength(1000)
   content: string;
 }
 @Controller('blogs')
@@ -157,9 +150,10 @@ export class BlogsController {
     }
     return newPost;
   }
-
+  @UseGuards(OptionalJwtAuthGuard)
   @Get(':id/posts')
   async getAllPostsByBlogsId(
+    @Req() request,
     @Param('id') blogId: string,
     @Query() queryParams: RequestQueryParamsModel,
   ) {
@@ -172,6 +166,7 @@ export class BlogsController {
     return await this.postsQueryRepository.getAllPostsByBlogsId(
       mergedQueryParams,
       blogId,
+      request.user,
     );
   }
   async isBlogExist(blogId) {

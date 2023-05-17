@@ -23,18 +23,25 @@ import {
 } from '../exceptions/custom.exceptions';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { th } from 'date-fns/locale';
-import { IsString, Length, Validate, IsNotEmpty } from 'class-validator';
-import { LikeStatusValidator } from '../middlewares/validators';
+import {
+  IsString,
+  Length,
+  Validate,
+  IsNotEmpty,
+  MaxLength,
+} from 'class-validator';
+import {
+  LikeStatusValidator,
+  StringTrimNotEmpty,
+} from '../middlewares/validators';
 
 export class UpdateCommentInputModelType {
-  @IsString()
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
   @Length(20, 300)
   content: string;
 }
 export class SetLikeStatusForCommentInputModel {
-  @IsString()
-  @IsNotEmpty()
+  @StringTrimNotEmpty()
   @Validate(LikeStatusValidator)
   likeStatus: string;
 }
