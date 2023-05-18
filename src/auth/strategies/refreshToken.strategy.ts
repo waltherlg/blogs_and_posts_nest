@@ -49,21 +49,21 @@ export class RefreshTokenStrategy extends PassportStrategy(
     if (!isUserExist) {
       throw new CustomisableException('no access', 'user not found', 401);
     }
-    const currentDevise = await this.usersDeviceService.getCurrentDevise(
-      userId,
-      deviceId,
-    );
-    if (!currentDevise) {
-      throw new CustomisableException('no access', 'device not found', 401);
-    }
-    const lastActiveRefreshToken = new Date(payload.iat * 1000).toISOString();
-    if (lastActiveRefreshToken !== currentDevise.lastActiveDate) {
-      throw new CustomisableException(
-        'no access',
-        'the last active dates do not match',
-        401,
-      );
-    }
+    // const currentDevise = await this.usersDeviceService.getCurrentDevise(
+    //   userId,
+    //   deviceId,
+    // );
+    // if (!currentDevise) {
+    //   throw new CustomisableException('no access', 'device not found', 401);
+    // }
+    // const lastActiveRefreshToken = new Date(payload.iat * 1000).toISOString();
+    // if (lastActiveRefreshToken !== currentDevise.lastActiveDate) {
+    //   throw new CustomisableException(
+    //     'no access',
+    //     'the last active dates do not match',
+    //     401,
+    //   );
+    // }
     return { userId, deviceId };
   }
 }
