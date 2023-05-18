@@ -193,10 +193,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(204)
   async logout(@Req() request, @Res({ passthrough: true }) response) {
-    const isLogout = await this.authService.logout(
-      request.user.userId,
-      request.user.deviceId,
-    );
+    const isLogout = await this.authService.logout(request.user);
     if (isLogout) {
       response
         .cookie('refreshToken', '', { httpOnly: true, secure: true })

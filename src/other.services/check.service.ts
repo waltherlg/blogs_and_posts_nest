@@ -3,12 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { PostsRepository } from '../posts/posts.repository';
 import { UsersRepository } from '../users/users.repository';
 import { CommentsRepository } from '../comments/comments.repository';
+import { UsersDevicesRepository } from '../usersDevices/usersDevicesRepository';
 @Injectable()
 export class CheckService {
   constructor(
     private readonly blogsRepository: BlogsRepository,
     private readonly postsRepository: PostsRepository,
     private readonly usersRepository: UsersRepository,
+    private readonly usersDeviceRepository: UsersDevicesRepository,
     private readonly commentsRepository: CommentsRepository,
   ) {}
   async isBlogExist(blogId): Promise<boolean> {
@@ -71,5 +73,13 @@ export class CheckService {
     if (!comment || comment.userId !== userId) {
       return false;
     } else return true;
+  }
+
+  async isUserOwnerOfDevice(userId, deviceId): Promise<boolean> {
+    const result = await this.usersDeviceRepository.getDeviceByUsersAndDeviceId(
+      userId,
+      deviceId,
+    );
+    return !!result;
   }
 }

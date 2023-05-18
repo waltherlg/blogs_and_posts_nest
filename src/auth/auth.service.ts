@@ -197,9 +197,9 @@ export class AuthService {
     const result = user.save();
     return !!result;
   }
-  async logout(userId: string, deviceId: string): Promise<boolean> {
+  async logout(user): Promise<boolean> {
     const isDeviceDeleted =
-      await this.usersDeviceRepository.deleteUserDeviceById(userId, deviceId);
+      await this.usersDeviceRepository.deleteUserDeviceById(user);
     return isDeviceDeleted;
   }
   async createTokens(userId: string, incomeDeviceId: string) {

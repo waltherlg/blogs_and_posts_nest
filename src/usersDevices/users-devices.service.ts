@@ -18,4 +18,16 @@ export class UsersDeviceService {
     );
     return foundDevices;
   }
+
+  async deleteUserDeviceById(user) {
+    const isUserDeviceDeleted =
+      await this.usersDeviceRepository.deleteUserDeviceById(user);
+    return isUserDeviceDeleted;
+  }
+
+  async deleteAllUserDevicesExceptCurrent(user) {
+    const isDevicesDeleted =
+      await this.usersDeviceRepository.deleteAllUserDevicesExceptCurrent(user);
+    return isDevicesDeleted;
+  }
 }

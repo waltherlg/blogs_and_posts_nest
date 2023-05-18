@@ -18,8 +18,6 @@ export class UsersDevicesRepository {
     if (!(Types.ObjectId.isValid(userId) && Types.ObjectId.isValid(deviceId))) {
       return null;
     }
-    const _id = new Types.ObjectId(deviceId);
-    const userIdObj = new Types.ObjectId(userId);
     const device = await this.usersDeviseModel.findOne({
       $and: [{ _id: deviceId }, { userId: userId }],
     });
@@ -55,15 +53,21 @@ export class UsersDevicesRepository {
       return device.prepareUsersDeviceForOutput();
     });
   }
-  async deleteUserDeviceById(
-    userId: string,
-    deviceId: string,
-  ): Promise<boolean> {
-    if (Types.ObjectId.isValid(deviceId)) {
+  async deleteUserDeviceById(user): Promise<boolean> {
+    if (Types.ObjectId.isValid(user.deviceId)) {
       const result = await this.usersDeviseModel.deleteOne({
-        $and: [{ _id: deviceId }, { userId: userId }],
+        $and: [{ _id: user.deviceId }, { userId: user.userId }],
       });
       return result.deletedCount === 1;
+    } else return false;
+  }
+  async deleteAllUserDevicesExceptCurrent(user): Promise<boolean> {
+    if (Types.ObjectId.isValid(user.deviceId)) {
+      //let _id = new ObjectId(deviceId)
+      const result = await this.usersDeviseModel.deleteMany({
+        $and: [{ userId: user.userId }, { _id: { $ne: user.deviceId } }],
+      });
+      return result.acknowledged;
     } else return false;
   }
   async deleteAllUsersDevices() {
