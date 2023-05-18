@@ -82,4 +82,11 @@ export class CheckService {
     );
     return !!result;
   }
+
+  async isUserDeviceExist(deviceId): Promise<boolean> {
+    const userDevice = await this.usersDeviceRepository.getUserDeviceById(
+      deviceId,
+    );
+    return !!userDevice;
+  }
 }

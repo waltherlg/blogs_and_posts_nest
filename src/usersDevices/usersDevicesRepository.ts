@@ -70,6 +70,16 @@ export class UsersDevicesRepository {
       return result.acknowledged;
     } else return false;
   }
+  async getUserDeviceById(deviceId) {
+    if (!Types.ObjectId.isValid(deviceId)) {
+      return null;
+    }
+    const userDevice = this.usersDeviseModel.findById(deviceId);
+    if (!userDevice) {
+      return null;
+    }
+    return userDevice;
+  }
   async deleteAllUsersDevices() {
     return await this.usersDeviseModel.deleteMany({});
   }

@@ -12,6 +12,7 @@ import { RefreshTokenGuard } from '../auth/guards/refreshToken.guard';
 import { UsersDeviceService } from './users-devices.service';
 import {
   CustomisableException,
+  CustomNotFoundException,
   UnableException,
 } from '../exceptions/custom.exceptions';
 import { CheckService } from '../other.services/check.service';
@@ -50,7 +51,11 @@ export class SecurityController {
   }
   @UseGuards(RefreshTokenGuard)
   @Delete('devices/:deviceId')
+  @HttpCode(204)
   async terminateDeviceSession(@Req() request, @Param('deviceId') deviceId) {
+    if (!(await this.checkService.isUserDeviceExist(deviceId))) {
+      throw new CustomNotFoundException('deviceId');
+    }
     if (
       !(await this.checkService.isUserOwnerOfDevice(
         request.user.userId,
