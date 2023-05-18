@@ -68,9 +68,11 @@ export class SecurityController {
         403,
       );
     }
-    const isDeviceDeleted = await this.usersDeviceService.deleteUserDeviceById(
-      request.user,
-    );
+    const isDeviceDeleted =
+      await this.usersDeviceService.deleteDeviceByUserAndDeviceId(
+        request.user.userId,
+        deviceId,
+      );
     if (!isDeviceDeleted) {
       throw new UnableException('terminating device session');
     }

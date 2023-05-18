@@ -53,10 +53,10 @@ export class UsersDevicesRepository {
       return device.prepareUsersDeviceForOutput();
     });
   }
-  async deleteUserDeviceById(user): Promise<boolean> {
-    if (Types.ObjectId.isValid(user.deviceId)) {
+  async deleteDeviceByUserAndDeviceId(userId, deviceId): Promise<boolean> {
+    if (Types.ObjectId.isValid(deviceId)) {
       const result = await this.usersDeviseModel.deleteOne({
-        $and: [{ _id: user.deviceId }, { userId: user.userId }],
+        $and: [{ _id: deviceId }, { userId: userId }],
       });
       return result.deletedCount === 1;
     } else return false;

@@ -19,9 +19,12 @@ export class UsersDeviceService {
     return foundDevices;
   }
 
-  async deleteUserDeviceById(user) {
+  async deleteDeviceByUserAndDeviceId(userId, deviceId) {
     const isUserDeviceDeleted =
-      await this.usersDeviceRepository.deleteUserDeviceById(user);
+      await this.usersDeviceRepository.deleteDeviceByUserAndDeviceId(
+        userId,
+        deviceId,
+      );
     return isUserDeviceDeleted;
   }
 
