@@ -17,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
 import { settings } from '../settings';
 import { UserDeviceDBType } from '../usersDevices/users-devices.types';
 import { UsersDevicesRepository } from '../usersDevices/usersDevicesRepository';
+import * as process from 'process';
 
 @Injectable()
 export class AuthService {
@@ -203,9 +204,14 @@ export class AuthService {
   }
   async createTokens(userId: string, incomeDeviceId: string) {
     const deviceId = incomeDeviceId;
-    const accessToken = await this.jwtService.signAsync({ userId: userId });
+    const accessToken = await this.jwtService.signAsync(
+      { userId: userId },
+      { expiresIn: process.env.ACCESS_TOKEN_EXPIRES },
+    );
     const refreshTokenPayload = { userId, deviceId };
-    const refreshToken = await this.jwtService.signAsync(refreshTokenPayload);
+    const refreshToken = await this.jwtService.signAsync(refreshTokenPayload, {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRES,
+    });
     return { accessToken, refreshToken };
   }
 
