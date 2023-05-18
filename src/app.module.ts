@@ -57,7 +57,8 @@ import {
 } from './middlewares/validators';
 import { TestRepository } from './all.data/test.repository';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -155,6 +156,10 @@ if (!emailUser || !emailPassword) {
     CustomUrlValidator,
     CustomBlogIdValidator,
     TrimNotEmptyValidator,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
   exports: [AuthService],
 })

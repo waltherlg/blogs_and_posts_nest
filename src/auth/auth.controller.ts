@@ -25,6 +25,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { StringTrimNotEmpty } from '../middlewares/validators';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 export class RegistrationEmailResendingInput {
   @StringTrimNotEmpty()
   @MaxLength(100)
@@ -55,7 +56,7 @@ export class NewPasswordSetInput {
   @MaxLength(100)
   recoveryCode: string;
 }
-
+@Throttle(5, 10)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -114,7 +115,7 @@ export class AuthController {
     // вариант где код будет проверятся в auth сервисе
     await this.authService.confirmEmail(Code.code);
   }
-
+  //@Throttle(5, 60)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() request, @Res({ passthrough: true }) response) {
@@ -129,6 +130,7 @@ export class AuthController {
       .send({ accessToken });
   }
   //current user info
+  @SkipThrottle()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async currentUserInfo(@Req() request) {
@@ -140,7 +142,7 @@ export class AuthController {
     }
     return currentUserInfo;
   }
-
+  @SkipThrottle()
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   async refreshToken(@Req() request, @Res({ passthrough: true }) response) {
@@ -186,6 +188,7 @@ export class AuthController {
       throw new UnableException('password change');
     }
   }
+  @SkipThrottle()
   @UseGuards(RefreshTokenGuard)
   @Post('logout')
   @HttpCode(204)
