@@ -43,12 +43,14 @@ export class UsersDevicesRepository {
     return !!result;
   }
   async getActiveUserDevices(userId: string) {
+    console.log('userId ', userId);
     if (!Types.ObjectId.isValid(userId)) {
       return null;
     }
     const activeUserDevices = await this.usersDeviseModel.find({
       userId: userId,
     });
+    console.log('activeUserDevices ', activeUserDevices);
     return activeUserDevices.map((device: UsersDeviceDocument) => {
       return device.prepareUsersDeviceForOutput();
     });
