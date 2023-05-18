@@ -56,7 +56,8 @@ import {
   TrimNotEmptyValidator,
 } from './middlewares/validators';
 import { TestRepository } from './all.data/test.repository';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -66,6 +67,10 @@ if (!emailUser || !emailPassword) {
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
     PassportModule,
     JwtModule.register({
       secret: settings.JWT_SECRET,

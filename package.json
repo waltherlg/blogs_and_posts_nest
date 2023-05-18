@@ -29,6 +29,7 @@
     "@nestjs/mongoose": "^9.2.2",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/throttler": "^4.0.0",
     "@types/cookie-parser": "^1.4.3",
     "@vercel/node": "^2.14.2",
     "auto": "^10.46.0",
